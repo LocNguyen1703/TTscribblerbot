@@ -1,16 +1,61 @@
-# This is a sample Python script.
+# python discord bot tutorial for reference:
+# https://www.youtube.com/watch?v=UYJDKSah-Ww
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import os
+from dotenv import load_dotenv
+from typing import Final
+from discord import Intents, Client, Message
+from responses import get_response
+
+# STEP 0: LOAD DISCORD BOT TOKEN FROM SOMEWHERE SAFE
+load_dotenv()
+# TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
+TOKEN = "MTIzOTgxNjQ5Mzg1NjcyMjk1NA.GgUph8.YCZBbT5hEtYBRLG6I4kpddWpAlin19qN74hdl0"
+# for debugging
+print(TOKEN)
+
+# STEP 1: BOT SETUP
+intents: Intents = Intents.default()
+intents.message_content = True
+client: Client = Client(intents=intents)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# STEP 2: MESSAGING FUNCTIONALITY
+async def send_message(message: Message, user_message: str) -> None:
+    if not user_message:  # if message is empty, no need to process anything
+        print('(message was empty because intents were not enabled)')
+        return
+    if is_private := user_message[0] == '!':
+        user_message = user_message[1]  # shift user_message to exclude the '!'
 
+    try:
+        response: str = get_response(user_message)
+        await message.author.send(response) if is_private else await message.channel.send(response)
+    # as I improve the code I should change this exception class to something as use-case-specific as posisble
+    except Exception as e:
+        print(e)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+# STEP 3: HANDLING STARTUP FOR OUR BOT
+@client.event
+async def on_ready() -> None:
+    print(f'{client.user} is now running!')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# STEP 4: HANDLE INCOMING MESSAGE
+@client.event
+async def on_message(message: Message) -> None:
+    # if the message was sent by the bot itself, halt instead of keep responding & creating an infinite loop
+    if message.author == client.user:
+        return
+    username: str = str(message.author)
+    user_message: str = message.content
+    channel: str = str(message.channel)
+
+    print(f'[{channel}, {username}: "{user_message}"]')
+    await send_message(message, user_message)
+
+# STEP 5: MAIN ENTRY POINT
+def main() -> None:
+    client.run(token=TOKEN)
+
+if __name__ == "__main__":
+    main()
