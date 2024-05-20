@@ -9,8 +9,7 @@ from responses import get_response
 
 # STEP 0: LOAD DISCORD BOT TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
-# TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
-TOKEN = "MTIzOTgxNjQ5Mzg1NjcyMjk1NA.GgUph8.YCZBbT5hEtYBRLG6I4kpddWpAlin19qN74hdl0"
+TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
@@ -35,10 +34,12 @@ async def send_message(message: Message, user_message: str) -> None:
     except Exception as e:
         print(e)
 
+
 # STEP 3: HANDLING STARTUP FOR OUR BOT
 @client.event
 async def on_ready() -> None:
     print(f'{client.user} is now running!')
+
 
 # STEP 4: HANDLE INCOMING MESSAGE
 @client.event
@@ -53,9 +54,11 @@ async def on_message(message: Message) -> None:
     print(f'[{channel}, {username}: "{user_message}"]')
     await send_message(message, user_message)
 
+
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:
     client.run(token=TOKEN)
+
 
 if __name__ == "__main__":
     main()
