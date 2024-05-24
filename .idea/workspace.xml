@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="fixed push conflicts - hopefully it works this time" />
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="made a .gitignore file (i thought it was already made &amp; pushed but apparently it's in a folder that makes it &quot;unversioned&quot;)">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -93,7 +95,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716194074465</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="made a .gitignore file (i thought it was already made &amp; pushed but apparently it's in a folder that makes it &quot;unversioned&quot;)">
+      <created>1716540561245</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1716540561245</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -111,6 +120,7 @@
     <MESSAGE value="initial commit - just added basic code file and README file" />
     <MESSAGE value="re-wrote the code for basic bot (found in YouTube tutorial)" />
     <MESSAGE value="fixed push conflicts - hopefully it works this time" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed push conflicts - hopefully it works this time" />
+    <MESSAGE value="made a .gitignore file (i thought it was already made &amp; pushed but apparently it's in a folder that makes it &quot;unversioned&quot;)" />
+    <option name="LAST_COMMIT_MESSAGE" value="made a .gitignore file (i thought it was already made &amp; pushed but apparently it's in a folder that makes it &quot;unversioned&quot;)" />
   </component>
 </project>
