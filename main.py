@@ -2,9 +2,12 @@
 # https://www.youtube.com/watch?v=UYJDKSah-Ww
 
 import os
+
+import discord
 from dotenv import load_dotenv
 from typing import Final
 from discord import Intents, Client, Message
+from discord import app_commands
 from discord.ext import commands
 from responses import get_response
 
@@ -74,6 +77,11 @@ async def send_message(message: Message, user_message: str) -> None:
 @bot.event
 async def on_ready() -> None:
     print(f'{bot.user} is now running!')
+    try:
+        synced = await bot.tree.sync()
+        print(f"synced {len(synced)} command(s)")
+    except Exception as e:
+        print(e)
 
 
 # STEP 4: HANDLE INCOMING MESSAGE
@@ -90,18 +98,8 @@ async def on_message(message: Message) -> None:
     await send_message(message, user_message)
 
 
-@bot.event
-async def on_bot_ready():
-    print("bot is up and ready!")
-    try:
-        synced = await bot.tree.sync()
-        print(f"synced {len(synced)} command(s)")
-    except Exception as e:
-        print(e)
-
-
-@bot.command(name='test')
-async def testCommand(ctx):
+@bot.tree.command(name='test')
+async def testCommand(interaction: discord.Interaction):
     valuesToWrite = [
         [ "C1","D1" ],
         [ "C2","D2" ],
@@ -121,7 +119,7 @@ async def testCommand(ctx):
         for row in values:
             # Print columns A and E, which correspond to indices 0 and 4.
             print('%s, %s' % (row[0], row[1]))
-            await ctx.send(f"{row[0]} {row[1]}")
+            await interaction.response.send_message(f"{row[0]} {row[1]}")
 
 
 # STEP 5: MAIN ENTRY POINT
