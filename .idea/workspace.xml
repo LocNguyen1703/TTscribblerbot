@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="downloaded and imported google sheets API (will need to figure out how it works &amp; how to download pytnon3.10.7 in Oracle Cloud VM)">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +117,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716683111766</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore">
+      <created>1716707352653</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1716707352653</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -138,6 +145,7 @@
     <MESSAGE value="made a .gitignore file (i thought it was already made &amp; pushed but apparently it's in a folder that makes it &quot;unversioned&quot;)" />
     <MESSAGE value="just committed a file in .idea that didn't get included in the last push" />
     <MESSAGE value="downloaded and imported google sheets API (will need to figure out how it works &amp; how to download pytnon3.10.7 in Oracle Cloud VM)" />
-    <option name="LAST_COMMIT_MESSAGE" value="downloaded and imported google sheets API (will need to figure out how it works &amp; how to download pytnon3.10.7 in Oracle Cloud VM)" />
+    <MESSAGE value="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore" />
   </component>
 </project>

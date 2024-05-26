@@ -18,6 +18,11 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
+# load ID of my google spreadsheet of choice and ranges of cells I want to access/edit from .env
+SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
+RANGE1 = os.getenv('TEST_READ_RANGE')
+RANGE2 = os.getenv('TEST_WRITE_RANGE')
+
 # STEP 1: BOT SETUP
 intents: Intents = Intents.default()
 intents.message_content = True
