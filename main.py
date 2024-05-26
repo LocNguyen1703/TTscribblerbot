@@ -7,6 +7,11 @@ from typing import Final
 from discord import Intents, Client, Message
 from responses import get_response
 
+import pickle
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+
 # STEP 0: LOAD DISCORD BOT TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
