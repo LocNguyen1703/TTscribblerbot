@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from typing import Final
 from discord import Intents, Client, Message
+from discord.ext import commands
 from responses import get_response
 
 import pickle
@@ -27,6 +28,30 @@ RANGE2 = os.getenv('TEST_WRITE_RANGE')
 intents: Intents = Intents.default()
 intents.message_content = True
 client: Client = Client(intents=intents)
+
+# If modifying these scopes, delete the file token.pickle.
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+# STEP 4*: TESTING GOOGLE SHEETS API FUNCTIONS
+# "initialize Google authentication" - still NOT sure why I need this part
+creds = None
+if os.path.exists('token.pickle'):
+    with open('token.pickle', 'rb') as token:
+        creds = pickle.load(token)
+if not creds or not creds.valid:
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+    else:
+        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+        creds = flow.run_local_server(port=0)
+    with open('token.pickle', 'wb') as token:
+        pickle.dump(creds, token)
+service = build('sheets', 'v4', credentials=creds)
+sheet = service.spreadsheets()
+
+# create a "bot command" instance - I'm assuming this is used for SPECIFIC commands like "!test" that
+# user types in message
+bot = commands.Bot(command_prefix='!')
 
 
 # STEP 2: MESSAGING FUNCTIONALITY
@@ -63,6 +88,30 @@ async def on_message(message: Message) -> None:
 
     print(f'[{channel}, {username}: "{user_message}"]')
     await send_message(message, user_message)
+
+
+@bot.command(name='test')
+async def testCommand(ctx):
+    valuesToWrite = [
+        [ "C1","D1" ],
+        [ "C2","D2" ],
+        [ "C3","D3" ],
+    ]
+    body = {
+        'values': valuesToWrite
+    }
+    result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE1).execute()
+    result2 = sheet.values().update(spreadsheetId=SPREADSHEET_ID, range=RANGE2, valueInputOption='USER_ENTERED', body=body).execute()
+    values = result.get('values', [])
+
+    if not values:
+        print('No data found.')
+    else:
+        print('Name, Major:')
+        for row in values:
+            # Print columns A and E, which correspond to indices 0 and 4.
+            print('%s, %s' % (row[0], row[1]))
+            await ctx.send(f"{row[0]} {row[1]}")
 
 
 # STEP 5: MAIN ENTRY POINT

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="updated a testing spreadsheet's ID, and access/edit cell ranges of choice">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -124,7 +124,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716707352653</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="updated a testing spreadsheet's ID, and access/edit cell ranges of choice">
+      <created>1716708139386</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1716708139386</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -146,6 +153,7 @@
     <MESSAGE value="just committed a file in .idea that didn't get included in the last push" />
     <MESSAGE value="downloaded and imported google sheets API (will need to figure out how it works &amp; how to download pytnon3.10.7 in Oracle Cloud VM)" />
     <MESSAGE value="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore" />
+    <MESSAGE value="updated a testing spreadsheet's ID, and access/edit cell ranges of choice" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated a testing spreadsheet's ID, and access/edit cell ranges of choice" />
   </component>
 </project>
