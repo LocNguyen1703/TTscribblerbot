@@ -27,7 +27,8 @@ RANGE2 = os.getenv('TEST_WRITE_RANGE')
 # STEP 1: BOT SETUP
 intents: Intents = Intents.default()
 intents.message_content = True
-client: Client = Client(intents=intents)
+client: Client = Client(intents=intents)  # maybe this is a "client message" instance - to read incoming user messages
+
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -51,7 +52,7 @@ sheet = service.spreadsheets()
 
 # create a "bot command" instance - I'm assuming this is used for SPECIFIC commands like "!test" that
 # user types in message
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='/', intents=intents)
 
 
 # STEP 2: MESSAGING FUNCTIONALITY
@@ -116,6 +117,7 @@ async def testCommand(ctx):
 
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:
+    bot.run(token=TOKEN)
     client.run(token=TOKEN)
 
 
