@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added a google sheets API testing function (found from a tutorial bot)">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -23,6 +22,13 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/Temp/f46fce31-33f4-420f-b127-317598189ec9_Google.Sheets.Bot.zip.ec9/bot.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/.env" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/.gitignore" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/main.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/responses.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -139,7 +145,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716709158551</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;">
+      <created>1716711164758</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1716711164758</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -163,6 +176,7 @@
     <MESSAGE value="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore" />
     <MESSAGE value="updated a testing spreadsheet's ID, and access/edit cell ranges of choice" />
     <MESSAGE value="added a google sheets API testing function (found from a tutorial bot)" />
-    <option name="LAST_COMMIT_MESSAGE" value="added a google sheets API testing function (found from a tutorial bot)" />
+    <MESSAGE value="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;" />
   </component>
 </project>

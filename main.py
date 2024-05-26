@@ -27,8 +27,11 @@ RANGE2 = os.getenv('TEST_WRITE_RANGE')
 # STEP 1: BOT SETUP
 intents: Intents = Intents.default()
 intents.message_content = True
-client: Client = Client(intents=intents)  # maybe this is a "client message" instance - to read incoming user messages
+# client: Client = Client(intents=intents)  # maybe this is a "client message" instance - to read incoming user messages
 
+# create a "bot command" instance - I'm assuming this is used for SPECIFIC commands like "!test" that
+# user types in message
+bot = commands.Bot(command_prefix='/', intents=intents)
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -50,10 +53,6 @@ if not creds or not creds.valid:
 service = build('sheets', 'v4', credentials=creds)
 sheet = service.spreadsheets()
 
-# create a "bot command" instance - I'm assuming this is used for SPECIFIC commands like "!test" that
-# user types in message
-bot = commands.Bot(command_prefix='/', intents=intents)
-
 
 # STEP 2: MESSAGING FUNCTIONALITY
 async def send_message(message: Message, user_message: str) -> None:
@@ -72,16 +71,16 @@ async def send_message(message: Message, user_message: str) -> None:
 
 
 # STEP 3: HANDLING STARTUP FOR OUR BOT
-@client.event
+@bot.event
 async def on_ready() -> None:
-    print(f'{client.user} is now running!')
+    print(f'{bot.user} is now running!')
 
 
 # STEP 4: HANDLE INCOMING MESSAGE
-@client.event
+@bot.event
 async def on_message(message: Message) -> None:
     # if the message was sent by the bot itself, halt instead of keep responding & creating an infinite loop
-    if message.author == client.user:
+    if message.author == bot.user:
         return
     username: str = str(message.author)
     user_message: str = message.content
@@ -89,6 +88,16 @@ async def on_message(message: Message) -> None:
 
     print(f'[{channel}, {username}: "{user_message}"]')
     await send_message(message, user_message)
+
+
+@bot.event
+async def on_bot_ready():
+    print("bot is up and ready!")
+    try:
+        synced = await bot.tree.sync()
+        print(f"synced {len(synced)} command(s)")
+    except Exception as e:
+        print(e)
 
 
 @bot.command(name='test')
@@ -118,7 +127,7 @@ async def testCommand(ctx):
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:
     bot.run(token=TOKEN)
-    client.run(token=TOKEN)
+    # client.run(token=TOKEN)
 
 
 if __name__ == "__main__":
