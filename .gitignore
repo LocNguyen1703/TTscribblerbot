@@ -10,3 +10,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+#Google Cloud Client ID
+client_secret_492397411923-f87n5ve47cv0o8hi7uutit0kbtblfqpe.apps.googleusercontent.com.json
