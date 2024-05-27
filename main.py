@@ -98,6 +98,9 @@ async def on_message(message: Message) -> None:
     await send_message(message, user_message)
 
 
+# STEP 4*: SPECIFIC BOT COMMAND TO ACCESS & PRINT GOOGLE SHEET CONTENT
+# could've made the bot to recognize any message for this functionality as well but tutorial I found only had
+# Google Sheet API integration in bot command form
 @bot.tree.command(name='test')
 async def testCommand(interaction: discord.Interaction):
     valuesToWrite = [

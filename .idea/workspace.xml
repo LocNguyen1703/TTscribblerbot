@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="turns out i can only use either &quot;client&quot; instance or &quot;bot&quot; instance, not both since it may cause whatever conflicts. Removed &quot;client&quot; instance. Bot is now running properly but the &quot;/test&quot; command still isn't">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -24,7 +24,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$USER_HOME$/AppData/Local/Temp/f46fce31-33f4-420f-b127-317598189ec9_Google.Sheets.Bot.zip.ec9/bot.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.env" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.gitignore" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/main.py" root0="FORCE_HIGHLIGHTING" />
@@ -159,7 +158,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716712915239</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much">
+      <created>1716715353926</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1716715353926</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -185,6 +191,7 @@
     <MESSAGE value="added a google sheets API testing function (found from a tutorial bot)" />
     <MESSAGE value="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;" />
     <MESSAGE value="turns out i can only use either &quot;client&quot; instance or &quot;bot&quot; instance, not both since it may cause whatever conflicts. Removed &quot;client&quot; instance. Bot is now running properly but the &quot;/test&quot; command still isn't" />
-    <option name="LAST_COMMIT_MESSAGE" value="turns out i can only use either &quot;client&quot; instance or &quot;bot&quot; instance, not both since it may cause whatever conflicts. Removed &quot;client&quot; instance. Bot is now running properly but the &quot;/test&quot; command still isn't" />
+    <MESSAGE value="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much" />
+    <option name="LAST_COMMIT_MESSAGE" value="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much" />
   </component>
 </project>
