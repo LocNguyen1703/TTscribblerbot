@@ -119,10 +119,12 @@ async def testCommand(interaction: discord.Interaction):
         print('No data found.')
     else:
         print('Name, Major:')
+        response_message = []
         for row in values:
             # Print columns A and E, which correspond to indices 0 and 4.
             print('%s, %s' % (row[0], row[1]))
-            await interaction.response.send_message(f"{row[0]} {row[1]}")
+            response_message.append(f'{row[0]}, {row[1]}')
+        await interaction.response.send_message("\n".join(i for i in response_message))
 
 
 # STEP 5: MAIN ENTRY POINT

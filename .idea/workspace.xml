@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added simple explanation comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -165,7 +165,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716715353926</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="added simple explanation comments">
+      <created>1716808679903</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1716808679903</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -192,6 +199,18 @@
     <MESSAGE value="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;" />
     <MESSAGE value="turns out i can only use either &quot;client&quot; instance or &quot;bot&quot; instance, not both since it may cause whatever conflicts. Removed &quot;client&quot; instance. Bot is now running properly but the &quot;/test&quot; command still isn't" />
     <MESSAGE value="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much" />
-    <option name="LAST_COMMIT_MESSAGE" value="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much" />
+    <MESSAGE value="added simple explanation comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="added simple explanation comments" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>126</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
