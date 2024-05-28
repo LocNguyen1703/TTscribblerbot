@@ -127,6 +127,41 @@ async def testCommand(interaction: discord.Interaction):
         await interaction.response.send_message("\n".join(i for i in response_message))
 
 
+# STEP 4*: SPECIFIC BOT COMMAND TO ADD NOTES TO CELLS
+@bot.tree.command(name='note')
+async def noteCommand(interaction: discord.Interaction, cell: str, note: str):
+    try:
+        # Create the request body to add the note to the specified cell
+        requests = [{
+            'updateCells': {
+                'range': {
+                    'sheetId': 0,  # Default to the first sheet; change if needed
+                    'startRowIndex': int(cell[1:]) - 1,  # Convert A1 notation to row index (0-based)
+                    'endRowIndex': int(cell[1:]),  # One row
+                    'startColumnIndex': ord(cell[0].upper()) - ord('A'),  # Convert column letter to index (0-based)
+                    'endColumnIndex': ord(cell[0].upper()) - ord('A') + 1  # One column
+                },
+                'rows': [{
+                    'values': [{
+                        'note': note
+                    }]
+                }],
+                'fields': 'note'
+            }
+        }]
+
+        # Execute the batch update request
+        body = {
+            'requests': requests
+        }
+        response = sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
+
+        await interaction.response.send_message(f"Note added to cell {cell}: {note}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        await interaction.response.send_message(f"An error occurred: {e}")
+
+
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:
     bot.run(token=TOKEN)
