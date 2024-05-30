@@ -26,6 +26,7 @@ print(TOKEN)
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 RANGE1 = os.getenv('TEST_READ_RANGE')
 RANGE2 = os.getenv('TEST_WRITE_RANGE')
+X_RANGE = os.getenv('X_CHECK_RANGE')
 
 # STEP 1: BOT SETUP
 intents: Intents = Intents.default()
@@ -129,37 +130,76 @@ async def testCommand(interaction: discord.Interaction):
 
 # STEP 4*: SPECIFIC BOT COMMAND TO ADD NOTES TO CELLS
 @bot.tree.command(name='note')
-async def noteCommand(interaction: discord.Interaction, cell: str, note: str):
+async def noteCommand(interaction: discord.Interaction):
     try:
-        # Create the request body to add the note to the specified cell
-        requests = [{
-            'updateCells': {
-                'range': {
-                    'sheetId': 0,  # Default to the first sheet; change if needed
-                    'startRowIndex': int(cell[1:]) - 1,  # Convert A1 notation to row index (0-based)
-                    'endRowIndex': int(cell[1:]),  # One row
-                    'startColumnIndex': ord(cell[0].upper()) - ord('A'),  # Convert column letter to index (0-based)
-                    'endColumnIndex': ord(cell[0].upper()) - ord('A') + 1  # One column
-                },
-                'rows': [{
-                    'values': [{
-                        'note': note
+        # apparently bot times out if response command is not sent immediately after bot command is processed
+        # defer() function lets bot know command is still being processed & keeps it from timing out
+        await interaction.response.defer()
+
+        rowIndex: int = 1
+        columnIndex: int = 1
+
+        # fetch values from event attendance - check to see if there are any "x"
+        x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
+        x_check = x_fetch.get('values', [])
+
+        # "reason" string to hold bad standing reasons to add to cells' notes
+        reasons: str = []
+        reason: str = ""
+
+        # add reason for every "x" found
+        if not x_fetch: # if there are no "x"'s found
+            return
+        else:
+            event_titles = x_check[0]
+            # access specific row & column of cell i wanna add notes in
+
+            for row in x_check[1:]:
+                for i in range(len(row)):
+                    if row[i] == "x":
+                        reason += "-missed " + event_titles[i] + " (+1)\n"
+                    elif row[i] == "t":
+                        reason += "-late to " + event_titles[i] + " (+0.5)\n"
+
+                try:
+                    # Create the request body to add the note to the specified cell
+                    requests = [{
+                        'updateCells': {
+                            'range': {
+                                'sheetId': 0,  # Default to the first sheet; change if needed
+                                'startRowIndex': rowIndex,  # Convert A1 notation to row index (0-based)
+                                'endRowIndex': rowIndex + 1,  # One row
+                                'startColumnIndex': columnIndex,  # Convert column letter to index (0-based)
+                                'endColumnIndex': columnIndex + 1  # One column
+                            },
+                            'rows': [{
+                                'values': [{
+                                    'note': reason
+                                }]
+                            }],
+                            'fields': 'note'
+                        }
                     }]
-                }],
-                'fields': 'note'
-            }
-        }]
 
-        # Execute the batch update request
-        body = {
-            'requests': requests
-        }
-        response = sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
+                    # Execute the batch update request
+                    body = {
+                        'requests': requests
+                    }
+                    response = sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
 
-        await interaction.response.send_message(f"Note added to cell {cell}: {note}")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    await interaction.followup.send(f"An error occurred: {e}")
+
+                rowIndex += 1
+                reason = ""
+
+            # confirm message that notes have been added
+            await interaction.followup.send(f"Notes added to cells successfully.")
+
     except Exception as e:
         print(f"An error occurred: {e}")
-        await interaction.response.send_message(f"An error occurred: {e}")
+        await interaction.followup.send(f"An error occurred: {e}")
 
 
 # STEP 5: MAIN ENTRY POINT
