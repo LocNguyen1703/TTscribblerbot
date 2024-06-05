@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="successfully added a &quot;add_note&quot; bot command - had trouble with syncing the new bot command to the bot and resolved it by reinviting the bot to the server. not sure if this is a 100% solution tho">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -186,7 +186,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716865653977</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later">
+      <created>1717066473889</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1717066473889</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -216,6 +223,7 @@
     <MESSAGE value="added simple explanation comments" />
     <MESSAGE value="fixed the test function - turns out an interaction instance can only respond to a command ONCE. I have multiple values in my read range, which makes the bot respond multiple times, which causes an error. Solution is to append all values into an array then use join() function, or append all values into a string" />
     <MESSAGE value="successfully added a &quot;add_note&quot; bot command - had trouble with syncing the new bot command to the bot and resolved it by reinviting the bot to the server. not sure if this is a 100% solution tho" />
-    <option name="LAST_COMMIT_MESSAGE" value="successfully added a &quot;add_note&quot; bot command - had trouble with syncing the new bot command to the bot and resolved it by reinviting the bot to the server. not sure if this is a 100% solution tho" />
+    <MESSAGE value="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later" />
+    <option name="LAST_COMMIT_MESSAGE" value="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later" />
   </component>
 </project>
