@@ -141,12 +141,12 @@ async def noteCommand(interaction: discord.Interaction):
     # "reason" string to hold bad standing reasons to add to cells' notes
     reason: str = ""
 
+    # list of requests to hold all cell update requests
+    requests = []
+
     # add reason for every "x" found
-    if not x_fetch:  # if there are no "x"'s found
-        return
-    else:
-        event_titles = x_check[0]
-        # access specific row & column of cell i wanna add notes in
+    event_titles = x_check[0]
+    # access specific row & column of cell i wanna add notes in
 
     try:
         # apparently bot times out if response command is not sent immediately after bot command is processed
@@ -160,38 +160,38 @@ async def noteCommand(interaction: discord.Interaction):
                 elif row[i] == "t":
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
 
-            try:
-                # Create the request body to add the note to the specified cell
-                requests = [{
-                    'updateCells': {
-                        'range': {
-                            'sheetId': 0,  # Default to the first sheet; change if needed
-                            'startRowIndex': rowIndex,  # Convert A1 notation to row index (0-based)
-                            'endRowIndex': rowIndex + 1,  # One row
-                            'startColumnIndex': columnIndex,  # Convert column letter to index (0-based)
-                            'endColumnIndex': columnIndex + 1  # One column
-                        },
-                        'rows': [{
-                            'values': [{
-                                'note': reason if reason else '' # this cleans note if the 'x''s are somehow deleted
-                            }]
-                        }],
-                        'fields': 'note'
-                    }
-                }]
-
-                # Execute the batch update request
-                body = {
-                    'requests': requests
+            # Create the request body to add the note to the specified cell
+            requests.append({
+                'updateCells': {
+                    'range': {
+                        'sheetId': 0,  # Default to the first sheet; change if needed
+                        'startRowIndex': rowIndex,  # Convert A1 notation to row index (0-based)
+                        'endRowIndex': rowIndex + 1,  # One row
+                        'startColumnIndex': columnIndex,  # Convert column letter to index (0-based)
+                        'endColumnIndex': columnIndex + 1  # One column
+                    },
+                    'rows': [{
+                        'values': [{
+                            'note': reason if reason else ''  # this cleans note if the 'x''s are somehow deleted
+                        }]
+                    }],
+                    'fields': 'note'
                 }
-                response = sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
-
-            except Exception as e:
-                print(f"An error occurred: {e}")
-                await interaction.followup.send(f"An error occurred: {e}")
+            })
 
             rowIndex += 1
             reason = ""
+
+        # Execute the batch update request
+        body = {
+            'requests': requests
+        }
+
+        try:
+            response = sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            await interaction.followup.send(f"An error occurred: {e}")
 
         # confirm message that notes have been added
         await interaction.followup.send(f"Notes added to cells successfully.")
@@ -199,6 +199,17 @@ async def noteCommand(interaction: discord.Interaction):
     except Exception as e:
         print(f"An error occurred: {e}")
         await interaction.followup.send(f"An error occurred: {e}")
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO ADD NOTES TO CELLS
+@bot.tree.command(name='bad_standing_check')
+async def badStandingCheck(interaction: discord.Interaction):
+    username: str = interaction.user.name
+
+    note_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
+    notes = note_fetch.get('sheets/data/rowData/values/note', [])
+
+    raise NotImplementedError("no code yet...")
 
 
 # STEP 5: MAIN ENTRY POINT
