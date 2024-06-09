@@ -127,6 +127,10 @@ async def testCommand(interaction: discord.Interaction):
             response_message.append(f'{row[0]}, {row[1]}')
         await interaction.response.send_message("\n".join(i for i in response_message))
 
+# a dictionary to store all notes
+notes_dict = {}
+scores_dict = {}
+
 
 # STEP 4*: SPECIFIC BOT COMMAND TO ADD NOTES TO CELLS
 @bot.tree.command(name='note')
@@ -138,6 +142,14 @@ async def noteCommand(interaction: discord.Interaction):
     x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
     x_check = x_fetch.get('values', [])
 
+    NAME_RANGE = os.getenv('NAME_RANGE')
+    names_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=NAME_RANGE).execute()
+    names = names_fetch.get('values', [])
+
+    SCORES_RANGE = os.getenv('SCORES_RANGE')
+    scores_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=SCORES_RANGE).execute()
+    scores = scores_fetch.get('values', [])
+
     # "reason" string to hold bad standing reasons to add to cells' notes
     reason: str = ""
 
@@ -146,19 +158,26 @@ async def noteCommand(interaction: discord.Interaction):
 
     # add reason for every "x" found
     event_titles = x_check[0]
-    # access specific row & column of cell i wanna add notes in
+    # access specific row & column of cell i want to add notes in
 
+    # clear dictionaries before re-updating
+    scores_dict.clear()
+    notes_dict.clear()
     try:
         # apparently bot times out if response command is not sent immediately after bot command is processed
         # defer() function lets bot know command is still being processed & keeps it from timing out
         await interaction.response.defer()
 
-        for row in x_check[1:]:
-            for i in range(len(row)):
-                if row[i] == "x":
+        for k in range(len(x_check[1:])):
+            for i in range(len(x_check[1:][k])):
+                if x_check[1:][k][i] == "x":
                     reason += "-missed " + event_titles[i] + " (+1)\n"
-                elif row[i] == "t":
+                elif x_check[1:][k][i] == "t":
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
+
+            # update notes dictionary
+            notes_dict.update({names[k][0]: reason if reason else "None added"})
+            scores_dict.update({names[k][0]: scores[k][0]})
 
             # Create the request body to add the note to the specified cell
             requests.append({
@@ -196,6 +215,9 @@ async def noteCommand(interaction: discord.Interaction):
         # confirm message that notes have been added
         await interaction.followup.send(f"Notes added to cells successfully.")
 
+        print(notes_dict)
+        print(scores_dict)
+
     except Exception as e:
         print(f"An error occurred: {e}")
         await interaction.followup.send(f"An error occurred: {e}")
@@ -204,12 +226,26 @@ async def noteCommand(interaction: discord.Interaction):
 # STEP 4*: SPECIFIC BOT COMMAND TO ADD NOTES TO CELLS
 @bot.tree.command(name='bad_standing_check')
 async def badStandingCheck(interaction: discord.Interaction):
-    username: str = interaction.user.name
+    username: str = interaction.user.display_name
 
-    note_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
-    notes = note_fetch.get('sheets/data/rowData/values/note', [])
+    '''
+    thought: instead of having a middle-man (creating notes THEN fetch notes back THEN reply to user message)
+    --> why not create note directly then send (i.e. instead of creating notes for all members create notes for the 
+    1 member asking then send it)
+    this way --> i can create like a global dictionary outside to store all notes, then update the dict weekly with 
+    the note command, then members can use this command to quickly fetch their notes
+    
+    edit: i now got it to work, but is there a better way so that i don't have to use global vars? (i.e. i'm thinking 
+    of a database, but idk if that's too complicated for this level..)
+    '''
+    good_standing_check: str = ' not' if float(scores_dict.get(username)) < 2 else ""
 
-    raise NotImplementedError("no code yet...")
+    response: str = f"hey {username}! you currently have {scores_dict.get(username)} points, which means " \
+                    f"you're{good_standing_check} in bad standing!\n" \
+                    f"reasons: {notes_dict.get(username)}\nif you have any questions please go annoy brother Scribe, " \
+                    f"I'm just relaying what he wrote down"
+
+    await interaction.response.send_message(response)
 
 
 # STEP 5: MAIN ENTRY POINT
