@@ -267,8 +267,11 @@ async def print_message(message: str):
 
 # actual scheduler function
 @bot.tree.command(name='set_timely_message')
-async def setTimelyMessage(interaction: discord.Interaction, message: str):
-    scheduler.add_job(print_message, CronTrigger(second=0), args=[message])
+async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str, message: str):
+    scheduler.add_job(print_message, CronTrigger(day=None if day.lower() == "none" else day,
+                                                 hour=None if hour.lower() == "none" else hour,
+                                                 minute=None if minute.lower() == "none" else minute,
+                                                 second= None if second.lower() == "none" else second), args=[message])
     await interaction.response.send_message(f'message scheduled: "{message}"')
     # return NotImplementedError("no code yet...")
 
