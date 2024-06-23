@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="cleaned up code in note command - batchUpdate() optimized (called only once to update everything)">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="updated functionality of note function &amp; added a badStandingCheck function to check and reply to user if they're in bad standing (might need to change how this function works in the future with the dictionaries)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -22,6 +22,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.env" root0="FORCE_HIGHLIGHTING" />
@@ -207,7 +215,14 @@
       <option name="project" value="LOCAL" />
       <updated>1717928776177</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="updated functionality of note function &amp; added a badStandingCheck function to check and reply to user if they're in bad standing (might need to change how this function works in the future with the dictionaries)">
+      <created>1717933679011</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1717933679011</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -240,6 +255,7 @@
     <MESSAGE value="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later" />
     <MESSAGE value="just cleaned up code for note command a bit (not really that much cleaner)" />
     <MESSAGE value="cleaned up code in note command - batchUpdate() optimized (called only once to update everything)" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleaned up code in note command - batchUpdate() optimized (called only once to update everything)" />
+    <MESSAGE value="updated functionality of note function &amp; added a badStandingCheck function to check and reply to user if they're in bad standing (might need to change how this function works in the future with the dictionaries)" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated functionality of note function &amp; added a badStandingCheck function to check and reply to user if they're in bad standing (might need to change how this function works in the future with the dictionaries)" />
   </component>
 </project>

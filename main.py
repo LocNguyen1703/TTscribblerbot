@@ -2,14 +2,18 @@
 # https://www.youtube.com/watch?v=UYJDKSah-Ww
 
 import os
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 import discord
 from dotenv import load_dotenv
 from typing import Final
 from discord import Intents, Client, Message
 from discord import app_commands
-from discord.ext import commands
+from discord.ext import commands, tasks
 from responses import get_response
+
+from datetime import datetime, timedelta
 
 import pickle
 from googleapiclient.discovery import build
@@ -33,9 +37,12 @@ intents: Intents = Intents.default()
 intents.message_content = True
 # client: Client = Client(intents=intents)  # maybe this is a "client message" instance - to read incoming user messages
 
-# create a "bot command" instance - I'm assuming this is used for SPECIFIC commands like "!test" that
+# create a "bot command" instance - I'm assuming this is used for SPECIFIC commands like "/test" that
 # user types in message
 bot = commands.Bot(command_prefix='/', intents=intents)
+
+# initialize a scheduler instance - for scheduling timely messages
+scheduler = AsyncIOScheduler()
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -81,6 +88,7 @@ async def on_ready() -> None:
     try:
         synced = await bot.tree.sync()
         print(f"synced {len(synced)} command(s)")
+        scheduler.start()
     except Exception as e:
         print(e)
 
@@ -223,7 +231,7 @@ async def noteCommand(interaction: discord.Interaction):
         await interaction.followup.send(f"An error occurred: {e}")
 
 
-# STEP 4*: SPECIFIC BOT COMMAND TO ADD NOTES TO CELLS
+# STEP 4*: SPECIFIC BOT COMMAND TO RETURN BAD STANDING STATUS TO USER
 @bot.tree.command(name='bad_standing_check')
 async def badStandingCheck(interaction: discord.Interaction):
     username: str = interaction.user.display_name
@@ -246,6 +254,23 @@ async def badStandingCheck(interaction: discord.Interaction):
                     f"I'm just relaying what he wrote down"
 
     await interaction.response.send_message(response)
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
+# separate function to print message
+async def print_message(message: str):
+    CHANNEL_ID = 1037860754524741634
+    channel = bot.get_channel(CHANNEL_ID)
+
+    if channel: await channel.send(message)
+
+
+# actual scheduler function
+@bot.tree.command(name='set_timely_message')
+async def setTimelyMessage(interaction: discord.Interaction, message: str):
+    scheduler.add_job(print_message, CronTrigger(second=0), args=[message])
+    await interaction.response.send_message(f'message scheduled: "{message}"')
+    # return NotImplementedError("no code yet...")
 
 
 # STEP 5: MAIN ENTRY POINT
