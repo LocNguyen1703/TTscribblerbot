@@ -276,6 +276,13 @@ async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str
     # return NotImplementedError("no code yet...")
 
 
+# STEP 4*: SPECIFIC BOT COMMAND TO CANCEL ALL MESSAGES
+@bot.tree.command(name='cancel_all_scheduled_messages')
+async def cancelAllMessages(interaction: discord.Interaction):
+    scheduler.remove_all_jobs()
+    await interaction.response.send_message("all scheduled messages have been canceled")
+
+
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:
     bot.run(token=TOKEN)

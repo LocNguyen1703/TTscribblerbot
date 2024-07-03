@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="successfully created bot command to set timely messages using APScheduler package from discord">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="adjusted the message scheduler function, now I can set weekly, hourly, &quot;minutely&quot;, custom-time messages (input formatting not flexible...)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -229,7 +229,14 @@
       <option name="project" value="LOCAL" />
       <updated>1719114327785</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="adjusted the message scheduler function, now I can set weekly, hourly, &quot;minutely&quot;, custom-time messages (input formatting not flexible...)">
+      <created>1719130142935</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1719130142935</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -264,6 +271,7 @@
     <MESSAGE value="cleaned up code in note command - batchUpdate() optimized (called only once to update everything)" />
     <MESSAGE value="updated functionality of note function &amp; added a badStandingCheck function to check and reply to user if they're in bad standing (might need to change how this function works in the future with the dictionaries)" />
     <MESSAGE value="successfully created bot command to set timely messages using APScheduler package from discord" />
-    <option name="LAST_COMMIT_MESSAGE" value="successfully created bot command to set timely messages using APScheduler package from discord" />
+    <MESSAGE value="adjusted the message scheduler function, now I can set weekly, hourly, &quot;minutely&quot;, custom-time messages (input formatting not flexible...)" />
+    <option name="LAST_COMMIT_MESSAGE" value="adjusted the message scheduler function, now I can set weekly, hourly, &quot;minutely&quot;, custom-time messages (input formatting not flexible...)" />
   </component>
 </project>
