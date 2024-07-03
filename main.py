@@ -232,6 +232,10 @@ async def noteCommand(interaction: discord.Interaction):
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO RETURN BAD STANDING STATUS TO USER
+'''
+IMPORTANT NOTE: this command only works after Scribe has run the /notes command 
+to set up local memory for bad standing points
+'''
 @bot.tree.command(name='bad_standing_check')
 async def badStandingCheck(interaction: discord.Interaction):
     username: str = interaction.user.display_name
@@ -251,7 +255,7 @@ async def badStandingCheck(interaction: discord.Interaction):
     response: str = f"hey {username}! you currently have {scores_dict.get(username)} points, which means " \
                     f"you're{good_standing_check} in bad standing!\n" \
                     f"reasons: {notes_dict.get(username)}\nif you have any questions please go annoy brother Scribe, " \
-                    f"I'm just relaying what he wrote down"
+                    f"I am but a vessel of his intelligence"
 
     await interaction.response.send_message(response)
 
