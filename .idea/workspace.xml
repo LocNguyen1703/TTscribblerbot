@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added a bot command to cancel ALL scheduled messages (is there a way to only cancel certain messages or &quot;jobs&quot;?)">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="no important updates, just code commenting and cleaning">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -242,7 +243,14 @@
       <option name="project" value="LOCAL" />
       <updated>1719965893034</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="no important updates, just code commenting and cleaning">
+      <created>1719966342890</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1719966342890</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -279,6 +287,7 @@
     <MESSAGE value="successfully created bot command to set timely messages using APScheduler package from discord" />
     <MESSAGE value="adjusted the message scheduler function, now I can set weekly, hourly, &quot;minutely&quot;, custom-time messages (input formatting not flexible...)" />
     <MESSAGE value="added a bot command to cancel ALL scheduled messages (is there a way to only cancel certain messages or &quot;jobs&quot;?)" />
-    <option name="LAST_COMMIT_MESSAGE" value="added a bot command to cancel ALL scheduled messages (is there a way to only cancel certain messages or &quot;jobs&quot;?)" />
+    <MESSAGE value="no important updates, just code commenting and cleaning" />
+    <option name="LAST_COMMIT_MESSAGE" value="no important updates, just code commenting and cleaning" />
   </component>
 </project>

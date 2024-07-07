@@ -4,6 +4,7 @@
 import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
 
 import discord
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ from discord import app_commands
 from discord.ext import commands, tasks
 from responses import get_response
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 import pickle
 from googleapiclient.discovery import build
@@ -113,15 +114,16 @@ async def on_message(message: Message) -> None:
 @bot.tree.command(name='test')
 async def testCommand(interaction: discord.Interaction):
     valuesToWrite = [
-        [ "C1","D1" ],
-        [ "C2","D2" ],
-        [ "C3","D3" ],
+        ["C1", "D1"],
+        ["C2", "D2"],
+        ["C3", "D3"],
     ]
     body = {
         'values': valuesToWrite
     }
     result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE1).execute()
-    result2 = sheet.values().update(spreadsheetId=SPREADSHEET_ID, range=RANGE2, valueInputOption='USER_ENTERED', body=body).execute()
+    result2 = sheet.values().update(spreadsheetId=SPREADSHEET_ID, range=RANGE2, valueInputOption='USER_ENTERED',
+                                    body=body).execute()
     values = result.get('values', [])
 
     if not values:
@@ -134,6 +136,7 @@ async def testCommand(interaction: discord.Interaction):
             print('%s, %s' % (row[0], row[1]))
             response_message.append(f'{row[0]}, {row[1]}')
         await interaction.response.send_message("\n".join(i for i in response_message))
+
 
 # a dictionary to store all notes
 notes_dict = {}
@@ -236,6 +239,8 @@ async def noteCommand(interaction: discord.Interaction):
 IMPORTANT NOTE: this command only works after Scribe has run the /notes command 
 to set up local memory for bad standing points
 '''
+
+
 @bot.tree.command(name='bad_standing_check')
 async def badStandingCheck(interaction: discord.Interaction):
     username: str = interaction.user.display_name
@@ -271,13 +276,35 @@ async def print_message(message: str):
 
 # actual scheduler function
 @bot.tree.command(name='set_timely_message')
-async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str, message: str):
+async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str,
+                           message: str):
     scheduler.add_job(print_message, CronTrigger(day=None if day.lower() == "none" else day,
                                                  hour=None if hour.lower() == "none" else hour,
                                                  minute=None if minute.lower() == "none" else minute,
-                                                 second= None if second.lower() == "none" else second), args=[message])
+                                                 second=None if second.lower() == "none" else second), args=[message])
     await interaction.response.send_message(f'message scheduled: "{message}"')
     # return NotImplementedError("no code yet...")
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE A ONE-TIME MESSAGE
+@bot.tree.command(name='set_message')
+async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, message: str):
+    """
+    ideas:
+        maybe I can use the same method as the set_timely_message command above, just after the message is sent,
+        I cancel it - WITHOUT CANCELING OTHER JOBS
+
+        - the ways jobs are kept track of is by their job_id
+        - I could create a local dictionary (same way I did for all Brothers' names & their points and whatnot)
+        to store each job's id and their message
+
+        or, apparently there's a class called "DateTrigger" - similar to CronTrigger, but triggers an event at
+        a certain date/time
+            - apparently input formatting is: YYYY-MM-DD HH:MM
+    """
+    send_time = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
+    scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message])
+    await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}"')
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO CANCEL ALL MESSAGES
