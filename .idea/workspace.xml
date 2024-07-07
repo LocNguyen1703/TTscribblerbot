@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="no important updates, just code commenting and cleaning">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="successfully added a one-time message scheduling command - instead of scheduling recurring messages, this allows drafting and scheduling a one-time message at a certain date/time">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -250,7 +250,14 @@
       <option name="project" value="LOCAL" />
       <updated>1719966342890</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="successfully added a one-time message scheduling command - instead of scheduling recurring messages, this allows drafting and scheduling a one-time message at a certain date/time">
+      <created>1720333027543</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1720333027543</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -288,6 +295,7 @@
     <MESSAGE value="adjusted the message scheduler function, now I can set weekly, hourly, &quot;minutely&quot;, custom-time messages (input formatting not flexible...)" />
     <MESSAGE value="added a bot command to cancel ALL scheduled messages (is there a way to only cancel certain messages or &quot;jobs&quot;?)" />
     <MESSAGE value="no important updates, just code commenting and cleaning" />
-    <option name="LAST_COMMIT_MESSAGE" value="no important updates, just code commenting and cleaning" />
+    <MESSAGE value="successfully added a one-time message scheduling command - instead of scheduling recurring messages, this allows drafting and scheduling a one-time message at a certain date/time" />
+    <option name="LAST_COMMIT_MESSAGE" value="successfully added a one-time message scheduling command - instead of scheduling recurring messages, this allows drafting and scheduling a one-time message at a certain date/time" />
   </component>
 </project>

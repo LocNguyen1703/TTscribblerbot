@@ -253,7 +253,7 @@ async def badStandingCheck(interaction: discord.Interaction):
     the note command, then members can use this command to quickly fetch their notes
     
     edit: i now got it to work, but is there a better way so that i don't have to use global vars? (i.e. i'm thinking 
-    of a database, but idk if that's too complicated for this level..)
+    of a database, but idk if that's too complicated for this level and for maintenance..)
     '''
     good_standing_check: str = ' not' if float(scores_dict.get(username)) < 2 else ""
 
@@ -262,7 +262,17 @@ async def badStandingCheck(interaction: discord.Interaction):
                     f"reasons: {notes_dict.get(username)}\nif you have any questions please go annoy brother Scribe, " \
                     f"I am but a vessel of his intelligence"
 
-    await interaction.response.send_message(response)
+    try:
+        # send a DM to user instead of a public message in channel with user.send()
+        await interaction.user.send(response)
+        await interaction.response.send_message(
+            "I DM'd your status, this message is only visible to you and will terminate in T-minus 60 seconds",
+            ephemeral=True, delete_after=60)
+    except discord.Forbidden:
+        await interaction.response.send_message(
+            "I couldn't DM you the status. Please check your DM settings or annoy Brother Scribe. "
+            "This message will terminate in T-minus 60 seconds",
+            ephemeral=True, delete_after=60)
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
@@ -301,6 +311,9 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
         or, apparently there's a class called "DateTrigger" - similar to CronTrigger, but triggers an event at
         a certain date/time
             - apparently input formatting is: YYYY-MM-DD HH:MM
+    edit:
+    function now works, but will need to do full test run
+        - not sure if this really schedules one-time messages or if the messages repeat every day
     """
     send_time = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
     scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message])
