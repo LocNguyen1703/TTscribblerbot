@@ -277,28 +277,34 @@ async def badStandingCheck(interaction: discord.Interaction):
 
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
 # separate function to print message
-async def print_message(message: str):
+async def print_message(message: str, file_path: str):
     CHANNEL_ID = 1037860754524741634
     channel = bot.get_channel(CHANNEL_ID)
 
-    if channel: await channel.send(message)
+    if channel:
+        if file_path:
+            file = discord.File(file_path.strip('"')) # remove quotation marks
+            await channel.send(message, file=file)
+        else: await channel.send(message)
 
 
 # actual scheduler function
 @bot.tree.command(name='set_timely_message')
 async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str,
-                           message: str):
+                           message: str, file_path: str):
     scheduler.add_job(print_message, CronTrigger(day=None if day.lower() == "none" else day,
                                                  hour=None if hour.lower() == "none" else hour,
                                                  minute=None if minute.lower() == "none" else minute,
-                                                 second=None if second.lower() == "none" else second), args=[message])
-    await interaction.response.send_message(f'message scheduled: "{message}"')
+                                                 second=None if second.lower() == "none" else second), args=[message, file_path])
+    await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
+                                            f'Message only visible to you and terminates in T-minus 60 seconds',
+                                            ephemeral=True, delete_after=60)
     # return NotImplementedError("no code yet...")
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE A ONE-TIME MESSAGE
 @bot.tree.command(name='set_message')
-async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, message: str):
+async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, message: str, file_path: str):
     """
     ideas:
         maybe I can use the same method as the set_timely_message command above, just after the message is sent,
@@ -316,8 +322,10 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
         - not sure if this really schedules one-time messages or if the messages repeat every day
     """
     send_time = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
-    scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message])
-    await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}"')
+    scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message, file_path])
+    await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
+                                            f'with file: {file_path}. Message only visible to you and will terminate '
+                                            f'in T-minus 60 seconds', ephemeral=True, delete_after=60)
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO CANCEL ALL MESSAGES

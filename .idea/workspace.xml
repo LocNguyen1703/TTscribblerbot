@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="successfully added a one-time message scheduling command - instead of scheduling recurring messages, this allows drafting and scheduling a one-time message at a certain date/time">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited the bad_standing_check command - bot now sends a DM to user instead of a public message to channel (that way Brother's bad standing points are private to them)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -257,7 +257,14 @@
       <option name="project" value="LOCAL" />
       <updated>1720333027543</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="edited the bad_standing_check command - bot now sends a DM to user instead of a public message to channel (that way Brother's bad standing points are private to them)">
+      <created>1720337028101</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1720337028101</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -296,6 +303,7 @@
     <MESSAGE value="added a bot command to cancel ALL scheduled messages (is there a way to only cancel certain messages or &quot;jobs&quot;?)" />
     <MESSAGE value="no important updates, just code commenting and cleaning" />
     <MESSAGE value="successfully added a one-time message scheduling command - instead of scheduling recurring messages, this allows drafting and scheduling a one-time message at a certain date/time" />
-    <option name="LAST_COMMIT_MESSAGE" value="successfully added a one-time message scheduling command - instead of scheduling recurring messages, this allows drafting and scheduling a one-time message at a certain date/time" />
+    <MESSAGE value="edited the bad_standing_check command - bot now sends a DM to user instead of a public message to channel (that way Brother's bad standing points are private to them)" />
+    <option name="LAST_COMMIT_MESSAGE" value="edited the bad_standing_check command - bot now sends a DM to user instead of a public message to channel (that way Brother's bad standing points are private to them)" />
   </component>
 </project>
