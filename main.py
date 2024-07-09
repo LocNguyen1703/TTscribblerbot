@@ -46,7 +46,8 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 scheduler = AsyncIOScheduler()
 
 # If modifying these scopes, delete the file token.pickle.
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
+          'https://www.googleapis.com/auth/calendar.readonly']
 
 # STEP 4*: TESTING GOOGLE SHEETS API FUNCTIONS
 # "initialize Google authentication" - still NOT sure why I need this part
@@ -62,8 +63,15 @@ if not creds or not creds.valid:
         creds = flow.run_local_server(port=0)
     with open('token.pickle', 'wb') as token:
         pickle.dump(creds, token)
-service = build('sheets', 'v4', credentials=creds)
-sheet = service.spreadsheets()
+
+'''set up instances of Google Calendar and Google Sheets'''
+# instance for Google sheets - called "sheet"
+service_sheets = build('sheets', 'v4', credentials=creds)
+sheet = service_sheets.spreadsheets()
+# instance for Google Calendar - called "service_calendars"
+# this service instance is from a class with multiple subclasses (my way of describing it)
+# including an Events subclass - call service_calendars.events() to access
+service_calendars = build('calendar', 'v3', credentials=creds)
 
 
 # STEP 2: MESSAGING FUNCTIONALITY
@@ -283,9 +291,10 @@ async def print_message(message: str, file_path: str):
 
     if channel:
         if file_path:
-            file = discord.File(file_path.strip('"')) # remove quotation marks
+            file = discord.File(file_path.strip('"'))  # remove quotation marks
             await channel.send(message, file=file)
-        else: await channel.send(message)
+        else:
+            await channel.send(message)
 
 
 # actual scheduler function
@@ -295,7 +304,8 @@ async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str
     scheduler.add_job(print_message, CronTrigger(day=None if day.lower() == "none" else day,
                                                  hour=None if hour.lower() == "none" else hour,
                                                  minute=None if minute.lower() == "none" else minute,
-                                                 second=None if second.lower() == "none" else second), args=[message, file_path])
+                                                 second=None if second.lower() == "none" else second),
+                      args=[message, file_path])
     await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
                                             f'Message only visible to you and terminates in T-minus 60 seconds',
                                             ephemeral=True, delete_after=60)
