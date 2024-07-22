@@ -240,6 +240,7 @@ async def noteCommand(interaction: discord.Interaction):
     except Exception as e:
         print(f"An error occurred: {e}")
         await interaction.followup.send(f"An error occurred: {e}")
+        # apparently followup class doesn't have ephemeral and delete_after parameters like interaction.response...
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO RETURN BAD STANDING STATUS TO USER
@@ -286,11 +287,11 @@ async def badStandingCheck(interaction: discord.Interaction):
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
 # separate function to print message
 async def print_message(message: str, file_path: str):
-    CHANNEL_ID = 1037860754524741634
+    CHANNEL_ID: int = 1037860754524741634
     channel = bot.get_channel(CHANNEL_ID)
 
     if channel:
-        if file_path:
+        if file_path.lower() != "none":
             file = discord.File(file_path.strip('"'))  # remove quotation marks
             await channel.send(message, file=file)
         else:
@@ -342,7 +343,53 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
 @bot.tree.command(name='cancel_all_scheduled_messages')
 async def cancelAllMessages(interaction: discord.Interaction):
     scheduler.remove_all_jobs()
-    await interaction.response.send_message("all scheduled messages have been canceled")
+    await interaction.response.send_message("all scheduled messages have been canceled. This message is only visible "
+                                            "to you and will terminate in T-minus 60 seconds",
+                                            ephemeral=True, delete_after=60)
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO NOTIFY EVENTS IN WEEK/MONTH
+@bot.tree.command(name='events_check')
+async def notifyEvents(interaction: discord.Interaction):
+    now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+    events_result = service_calendars.events().list(calendarId='primary', timeMin=now,
+                                                    maxResults=10, singleEvents=True,
+                                                    orderBy='startTime').execute()
+    # events_result is a "response body" (kinda like the request body we created in note command)
+
+    """
+    get() function returns the specific category in the response body that we want - i.e. the items list
+    google calendar API for better explanation: https://developers.google.com/calendar/api/v3/reference/events/list
+    """
+    events = events_result['items']  # I can either use .get() or "[]" to access categories in response body
+
+    if not events: await interaction.response.send_message("no upcoming events found. This message is only visible "
+                                                           "to you and will terminate in T-minus 60 seconds",
+                                                           ephemeral=True, delete_after=60)
+    event_list = []
+    for event in events:
+        start = event['start'].get('dateTime')
+        event_list.append(f"{start} - {event['summary']}")
+
+    response: str = "\n".join(event_list)
+    await interaction.response.send_message(f'here are the {len(event_list)} events upcoming events: \n{response}\n'
+                                            f'This message is only visible to you and will terminate in '
+                                            f'T-minus 60 seconds', ephemeral=True, delete_after=60)
+    """
+    current message:
+here are the 10 events upcoming events: 
+2024-07-22T17:00:00-07:00 - Accelerate deep work session (5-7pm)
+2024-07-23T18:00:00-07:00 - invite-only workshops/events
+2024-07-24T17:00:00-07:00 - Accelerate deep work session (5-7pm)
+2024-07-27T10:00:00-07:00 - Accelerate deep work session (10-12pm)
+2024-07-29T17:00:00-07:00 - Accelerate deep work session (5-7pm)
+2024-07-30T18:00:00-07:00 - invite-only workshops/events
+2024-07-31T17:00:00-07:00 - Accelerate deep work session (5-7pm)
+2024-08-03T10:00:00-07:00 - Accelerate deep work session (10-12pm)
+2024-08-05T17:00:00-07:00 - Accelerate deep work session (5-7pm)
+2024-08-06T18:00:00-07:00 - invite-only workshops/events
+This message is only visible to you and will terminate in T-minus 60 seconds
+    """
 
 
 # STEP 5: MAIN ENTRY POINT
