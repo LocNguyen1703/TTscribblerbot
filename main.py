@@ -376,7 +376,7 @@ async def notifyEvents(interaction: discord.Interaction):
                                             f'This message is only visible to you and will terminate in '
                                             f'T-minus 60 seconds', ephemeral=True, delete_after=60)
     """
-    current message:
+    current message - will need to edit this for better understanding for user:
 here are the 10 events upcoming events: 
 2024-07-22T17:00:00-07:00 - Accelerate deep work session (5-7pm)
 2024-07-23T18:00:00-07:00 - invite-only workshops/events
