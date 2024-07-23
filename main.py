@@ -49,7 +49,7 @@ scheduler = AsyncIOScheduler()
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
-          'https://www.googleapis.com/auth/calendar.readonly']
+          'https://www.googleapis.com/auth/calendar']
 
 # STEP 4*: TESTING GOOGLE SHEETS API FUNCTIONS
 # "initialize Google authentication" - still NOT sure why I need this part
@@ -370,15 +370,17 @@ async def notifyEvents(interaction: discord.Interaction):
                                                            ephemeral=True, delete_after=60)
     event_list = []
     for event in events:
+        end = event['end']['dateTime'][11:16]  # isolate 11th-19th characters (end-time) from random formatting noise
         start = event['start']['dateTime']
-        start = start.replace('T', '-', 1)
-        start = start.replace(start[19:25], '', 1)
+        start = start.replace('T', ' ', 1).replace(start[16:25], '-' + end, 1)
         event_list.append(f"{start} - {event['summary']}")
 
     response: str = "\n".join(event_list)
     await interaction.response.send_message(f'here are the {len(event_list)} events upcoming events: \n{response}\n'
                                             f'This message is only visible to you and will terminate in '
                                             f'T-minus 60 seconds', ephemeral=True, delete_after=60)
+    print(len(response+'here are the events upcoming events: \n\nThis message is only visible to you and will terminate in T-minus 60 seconds'))
+
     """
     current message - will need to edit this for better understanding for user:
 here are the 10 events upcoming events: 
@@ -394,37 +396,36 @@ here are the 10 events upcoming events:
 2024-08-06T18:00:00-07:00 - invite-only workshops/events
 This message is only visible to you and will terminate in T-minus 60 seconds
 
-message after some editing: 
-here are the 29 events upcoming events: 
-2024-07-22-17:00:00 - Accelerate deep work session (5-7pm)
-2024-07-23-18:00:00 - invite-only workshops/events
-2024-07-24-17:00:00 - Accelerate deep work session (5-7pm)
-2024-07-27-10:00:00 - Accelerate deep work session (10-12pm)
-2024-07-29-17:00:00 - Accelerate deep work session (5-7pm)
-2024-07-30-18:00:00 - invite-only workshops/events
-2024-07-31-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-03-10:00:00 - Accelerate deep work session (10-12pm)
-2024-08-05-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-06-18:00:00 - invite-only workshops/events
-2024-08-07-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-08-18:00:00 - Regional Conference Meeting III - Lambda Delta
-2024-08-08-18:00:00 - Regionals meeting
-2024-08-10-10:00:00 - Accelerate deep work session (10-12pm)
-2024-08-12-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-13-18:00:00 - invite-only workshops/events
-2024-08-14-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-17-10:00:00 - Accelerate deep work session (10-12pm)
-2024-08-19-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-20-18:00:00 - invite-only workshops/events
-2024-08-21-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-24-10:00:00 - Accelerate deep work session (10-12pm)
-2024-08-26-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-27-18:00:00 - invite-only workshops/events
-2024-08-28-17:00:00 - Accelerate deep work session (5-7pm)
-2024-08-31-10:00:00 - Accelerate deep work session (10-12pm)
-2024-09-02-17:00:00 - Accelerate deep work session (5-7pm)
-2024-09-03-18:00:00 - invite-only workshops/events
-2024-09-04-17:00:00 - Accelerate deep work session (5-7pm)
+message after some editing (much more understandable): 
+here are the 28 events upcoming events: 
+2024-07-23 10:00-11:00 - random example event title
+2024-07-23 18:00-20:00 - invite-only workshops/events
+2024-07-24 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-07-27 10:00-12:00 - Accelerate deep work session (10-12pm)
+2024-07-29 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-07-30 18:00-20:00 - invite-only workshops/events
+2024-07-31 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-03 10:00-12:00 - Accelerate deep work session (10-12pm)
+2024-08-05 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-06 18:00-20:00 - invite-only workshops/events
+2024-08-07 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-08 18:00-19:00 - Regional Conference Meeting III - Lambda Delta
+2024-08-08 18:00-19:00 - Regionals meeting
+2024-08-10 10:00-12:00 - Accelerate deep work session (10-12pm)
+2024-08-12 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-13 18:00-20:00 - invite-only workshops/events
+2024-08-14 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-17 10:00-12:00 - Accelerate deep work session (10-12pm)
+2024-08-19 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-20 18:00-20:00 - invite-only workshops/events
+2024-08-21 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-24 10:00-12:00 - Accelerate deep work session (10-12pm)
+2024-08-26 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-27 18:00-20:00 - invite-only workshops/events
+2024-08-28 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-08-31 10:00-12:00 - Accelerate deep work session (10-12pm)
+2024-09-02 17:00-19:00 - Accelerate deep work session (5-7pm)
+2024-09-03 18:00-20:00 - invite-only workshops/events
 This message is only visible to you and will terminate in T-minus 60 seconds
     """
 
@@ -432,18 +433,56 @@ This message is only visible to you and will terminate in T-minus 60 seconds
 # STEP 4*: SPECIFIC BOT COMMAND TO INSERT AN EVENT/MULTIPLE EVENTS
 # idea: have a comment similar to add notes command where I can add multiple notes at the same time
 @bot.tree.command(name="add_event")
-async def insertEvent(interaction: discord.Interaction, events: str):
+async def insertEvent(interaction: discord.Interaction, title: str, location: str, description: str,
+                      start_datetime: str, end_datetime: str):
     """
-    :param interaction:
-    :param events:
-    :return: None
     how to format input string events (how do I want user to type in events to add):
         - maybe read in a .txt file that includes multiple events to add? or a string
             - downside of using string is user probably won't be able to add multiple events
         - what if we specified input parameter as a list? result - error: "unsupported type _"...
+
+    - I guess let's start with the 1st step: adding a single event
+    - input format:
+        - we can have multiple parameters for a single event: summary, location, datetime, timezone, etc.
+            - e.g. insertEvent(interaction, event_summary: str, location: str, datetime: str, timezone: str, etc.)
+        - or, we can have a single string containing all that info in an established order
+            - e.g. insertEvent(interaction: discord.Interaction, event: str)
+
+    example input format:
+                  title  location   description       start_datetime         end_datetime
+    !add_events 'Meeting,Office,Discuss Q2 targets,2024-07-02T10:00:00Z,2024-07-02T11:00:00Z';
+
+    edit:
+        - command works
+        - I still don't understand the format (I clearly inputted time as 10-11am, but the created event is from 3-4am?)
+
+    test command:
+    /add_event title:random example event title location:mah house description:parteh time!! start_datetime:2024-07-23T10:00:00 end_datetime:2024-07-23T11:00:00
     """
-    events_list = events.split()
-    return NotImplementedError("no code here yet...")
+    # unlike note command above, I don't need to defer interaction (yet) cause this command can execute
+    # quick enough without causing timeout - I'm guessing once I go to add multiple events in a command I'll have to
+    # defer interaction...
+    event_body = {
+        'summary': title,
+        'location': location,
+        'description': description,
+        'start': {
+            'dateTime': start_datetime,
+            'timeZone': 'America/Los_Angeles',  # time zone in Cali belongs to America/Los_Angeles instead of UTC!!
+        },
+        'end': {
+            'dateTime': end_datetime,
+            'timeZone': 'America/Los_Angeles',
+        },
+    }
+    try:
+        event = service_calendars.events().insert(calendarId='primary', body=event_body).execute()
+        await interaction.response.send_message(f'added event: {event}. this message is only visible to you and will '
+                                                f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+    except Exception as e:  # do research - try to look for the exact error(s) in this situation
+        await interaction.response.send_message(f'an error occurred: {e}. this message is only visible to you and will '
+                                                f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+    # return NotImplementedError("no code here yet...")
 
 
 # STEP 5: MAIN ENTRY POINT
