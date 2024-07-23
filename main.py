@@ -450,14 +450,25 @@ async def insertEvent(interaction: discord.Interaction, title: str, location: st
 
     example input format:
                   title  location   description       start_datetime         end_datetime
-    !add_events 'Meeting,Office,Discuss Q2 targets,2024-07-02T10:00:00Z,2024-07-02T11:00:00Z';
-
-    edit:
-        - command works
-        - I still don't understand the format (I clearly inputted time as 10-11am, but the created event is from 3-4am?)
+    !add_events 'Meeting,Office,Discuss Q2 targets,2024-07-02T10:00:00,2024-07-02T11:00:00';
 
     test command:
     /add_event title:random example event title location:mah house description:parteh time!! start_datetime:2024-07-23T10:00:00 end_datetime:2024-07-23T11:00:00
+
+    next step: a command to add multiple events in a single request
+    how to format input parameters and unpack said input: 1st idea
+        - have multiple parameters for a single event (summary, location, datetime, etc.)
+        - each of those params takes in a long string of inputs for multiple events
+            - e.g. summary: eventtitle1, eventtitle2; location: location1, location2, etc.
+
+        - then, to unpack input we can do something like this:
+
+        a = "h e l l o"
+        b = "w o r l d"
+        c = "d a i l y"
+        d = "w o r d l e"
+
+        a_lst, b_lst, c_lst, d_lst = a.split(), b.split(), c.split(), d.split() - one line gets 4 different lists
     """
     # unlike note command above, I don't need to defer interaction (yet) cause this command can execute
     # quick enough without causing timeout - I'm guessing once I go to add multiple events in a command I'll have to
