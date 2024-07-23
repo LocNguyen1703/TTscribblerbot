@@ -353,7 +353,7 @@ async def cancelAllMessages(interaction: discord.Interaction):
 async def notifyEvents(interaction: discord.Interaction):
     now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     events_result = service_calendars.events().list(calendarId='primary', timeMin=now,
-                                                    maxResults=10, singleEvents=True,
+                                                    maxResults=30, singleEvents=True,
                                                     orderBy='startTime').execute()
     # events_result is a "response body" (kinda like the request body we created in note command)
 
@@ -368,7 +368,9 @@ async def notifyEvents(interaction: discord.Interaction):
                                                            ephemeral=True, delete_after=60)
     event_list = []
     for event in events:
-        start = event['start'].get('dateTime')
+        start = event['start']['dateTime']
+        start = start.replace('T', '-', 1)
+        start = start.replace(start[19:25], '', 1)
         event_list.append(f"{start} - {event['summary']}")
 
     response: str = "\n".join(event_list)
@@ -388,6 +390,39 @@ here are the 10 events upcoming events:
 2024-08-03T10:00:00-07:00 - Accelerate deep work session (10-12pm)
 2024-08-05T17:00:00-07:00 - Accelerate deep work session (5-7pm)
 2024-08-06T18:00:00-07:00 - invite-only workshops/events
+This message is only visible to you and will terminate in T-minus 60 seconds
+
+message after some editing: 
+here are the 29 events upcoming events: 
+2024-07-22-17:00:00 - Accelerate deep work session (5-7pm)
+2024-07-23-18:00:00 - invite-only workshops/events
+2024-07-24-17:00:00 - Accelerate deep work session (5-7pm)
+2024-07-27-10:00:00 - Accelerate deep work session (10-12pm)
+2024-07-29-17:00:00 - Accelerate deep work session (5-7pm)
+2024-07-30-18:00:00 - invite-only workshops/events
+2024-07-31-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-03-10:00:00 - Accelerate deep work session (10-12pm)
+2024-08-05-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-06-18:00:00 - invite-only workshops/events
+2024-08-07-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-08-18:00:00 - Regional Conference Meeting III - Lambda Delta
+2024-08-08-18:00:00 - Regionals meeting
+2024-08-10-10:00:00 - Accelerate deep work session (10-12pm)
+2024-08-12-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-13-18:00:00 - invite-only workshops/events
+2024-08-14-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-17-10:00:00 - Accelerate deep work session (10-12pm)
+2024-08-19-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-20-18:00:00 - invite-only workshops/events
+2024-08-21-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-24-10:00:00 - Accelerate deep work session (10-12pm)
+2024-08-26-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-27-18:00:00 - invite-only workshops/events
+2024-08-28-17:00:00 - Accelerate deep work session (5-7pm)
+2024-08-31-10:00:00 - Accelerate deep work session (10-12pm)
+2024-09-02-17:00:00 - Accelerate deep work session (5-7pm)
+2024-09-03-18:00:00 - invite-only workshops/events
+2024-09-04-17:00:00 - Accelerate deep work session (5-7pm)
 This message is only visible to you and will terminate in T-minus 60 seconds
     """
 

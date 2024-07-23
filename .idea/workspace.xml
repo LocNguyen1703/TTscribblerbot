@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added an events_check command that returns 10 events on Google Calendar from command's real call time. How the event information is syntaxed according to Google Calendar API is weird, will need to understand it and find a way to edit it (could just edit the string itself instead of find a different way to fetch each event's info)" />
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="just added code comments">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -282,7 +285,14 @@
       <option name="project" value="LOCAL" />
       <updated>1721640000901</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="just added code comments">
+      <created>1721640134306</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1721640134306</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -297,7 +307,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="made a .gitignore file (i thought it was already made &amp; pushed but apparently it's in a folder that makes it &quot;unversioned&quot;)" />
     <MESSAGE value="just committed a file in .idea that didn't get included in the last push" />
     <MESSAGE value="downloaded and imported google sheets API (will need to figure out how it works &amp; how to download pytnon3.10.7 in Oracle Cloud VM)" />
     <MESSAGE value="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore" />
@@ -322,6 +331,7 @@
     <MESSAGE value="edited both the set message commands - the bot-response message is now only visible to command caller and command also includes functionality to attach files" />
     <MESSAGE value="edited the API authentication and instance creation process to include authenticating for Google Calendar API and a Google API service instance." />
     <MESSAGE value="added an events_check command that returns 10 events on Google Calendar from command's real call time. How the event information is syntaxed according to Google Calendar API is weird, will need to understand it and find a way to edit it (could just edit the string itself instead of find a different way to fetch each event's info)" />
-    <option name="LAST_COMMIT_MESSAGE" value="added an events_check command that returns 10 events on Google Calendar from command's real call time. How the event information is syntaxed according to Google Calendar API is weird, will need to understand it and find a way to edit it (could just edit the string itself instead of find a different way to fetch each event's info)" />
+    <MESSAGE value="just added code comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="just added code comments" />
   </component>
 </project>
