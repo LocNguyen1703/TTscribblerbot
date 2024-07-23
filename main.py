@@ -2,13 +2,15 @@
 # https://www.youtube.com/watch?v=UYJDKSah-Ww
 
 import os
+import typing
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 
 import discord
 from dotenv import load_dotenv
-from typing import Final
+from typing import Final, Sequence
 from discord import Intents, Client, Message
 from discord import app_commands
 from discord.ext import commands, tasks
@@ -425,6 +427,23 @@ here are the 29 events upcoming events:
 2024-09-04-17:00:00 - Accelerate deep work session (5-7pm)
 This message is only visible to you and will terminate in T-minus 60 seconds
     """
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO INSERT AN EVENT/MULTIPLE EVENTS
+# idea: have a comment similar to add notes command where I can add multiple notes at the same time
+@bot.tree.command(name="add_event")
+async def insertEvent(interaction: discord.Interaction, events: str):
+    """
+    :param interaction:
+    :param events:
+    :return: None
+    how to format input string events (how do I want user to type in events to add):
+        - maybe read in a .txt file that includes multiple events to add? or a string
+            - downside of using string is user probably won't be able to add multiple events
+        - what if we specified input parameter as a list? result - error: "unsupported type _"...
+    """
+    events_list = events.split()
+    return NotImplementedError("no code here yet...")
 
 
 # STEP 5: MAIN ENTRY POINT
