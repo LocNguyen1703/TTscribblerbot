@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="just added some code comments">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added new ignores - added a private file into project folder">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
@@ -320,7 +320,14 @@
       <option name="project" value="LOCAL" />
       <updated>1721725362061</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="added new ignores - added a private file into project folder">
+      <created>1721811831840</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1721811831840</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -335,7 +342,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added a google sheets API testing function (found from a tutorial bot)" />
     <MESSAGE value="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;" />
     <MESSAGE value="turns out i can only use either &quot;client&quot; instance or &quot;bot&quot; instance, not both since it may cause whatever conflicts. Removed &quot;client&quot; instance. Bot is now running properly but the &quot;/test&quot; command still isn't" />
     <MESSAGE value="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much" />
@@ -360,6 +366,7 @@
     <MESSAGE value="just added code comments and basis for an add_event command" />
     <MESSAGE value="edited response message in events_check command - much more understandable now, and added an add_event command - able to add 1 single event to Google Calendar" />
     <MESSAGE value="just added some code comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="just added some code comments" />
+    <MESSAGE value="added new ignores - added a private file into project folder" />
+    <option name="LAST_COMMIT_MESSAGE" value="added new ignores - added a private file into project folder" />
   </component>
 </project>
