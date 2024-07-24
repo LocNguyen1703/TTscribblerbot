@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited response message in events_check command - much more understandable now, and added an add_event command - able to add 1 single event to Google Calendar">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="just added some code comments">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -312,7 +313,14 @@
       <option name="project" value="LOCAL" />
       <updated>1721725100855</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="just added some code comments">
+      <created>1721725362061</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1721725362061</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -327,7 +335,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="updated a testing spreadsheet's ID, and access/edit cell ranges of choice" />
     <MESSAGE value="added a google sheets API testing function (found from a tutorial bot)" />
     <MESSAGE value="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;" />
     <MESSAGE value="turns out i can only use either &quot;client&quot; instance or &quot;bot&quot; instance, not both since it may cause whatever conflicts. Removed &quot;client&quot; instance. Bot is now running properly but the &quot;/test&quot; command still isn't" />
@@ -352,6 +359,7 @@
     <MESSAGE value="edited events_check command - command will now notify of up to 30 upcoming events from command's real call time. Also edited response message to show date and time (in 24hr unit) and event title" />
     <MESSAGE value="just added code comments and basis for an add_event command" />
     <MESSAGE value="edited response message in events_check command - much more understandable now, and added an add_event command - able to add 1 single event to Google Calendar" />
-    <option name="LAST_COMMIT_MESSAGE" value="edited response message in events_check command - much more understandable now, and added an add_event command - able to add 1 single event to Google Calendar" />
+    <MESSAGE value="just added some code comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="just added some code comments" />
   </component>
 </project>

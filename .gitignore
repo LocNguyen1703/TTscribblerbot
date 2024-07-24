@@ -16,3 +16,6 @@ credentials.json
 
 #the token pickle thing
 token.pickle
+
+#Oracle Cloud private key
+ssh-key-2024-07-24.key
