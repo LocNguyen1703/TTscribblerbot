@@ -66,8 +66,8 @@ if not creds or not creds.valid:
         I'm assuming following line is responsible for opening Google browser & authentication process,
         which is not available in a headless VM
         """
-        # creds = flow.run_local_server(port=0)
-        creds = flow.run_console()
+        creds = flow.run_local_server(port=0)
+        # creds = flow.run_console()
     with open('token.pickle', 'wb') as token:
         pickle.dump(creds, token)
 
