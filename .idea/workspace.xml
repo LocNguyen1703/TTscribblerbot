@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added new field in ignore">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added new field in ignore (requirements.txt)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -341,7 +340,14 @@
       <option name="project" value="LOCAL" />
       <updated>1721896451087</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="added new field in ignore (requirements.txt)">
+      <created>1721956440914</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1721956440914</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -356,7 +362,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="turns out i can only use either &quot;client&quot; instance or &quot;bot&quot; instance, not both since it may cause whatever conflicts. Removed &quot;client&quot; instance. Bot is now running properly but the &quot;/test&quot; command still isn't" />
     <MESSAGE value="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much" />
     <MESSAGE value="added simple explanation comments" />
     <MESSAGE value="fixed the test function - turns out an interaction instance can only respond to a command ONCE. I have multiple values in my read range, which makes the bot respond multiple times, which causes an error. Solution is to append all values into an array then use join() function, or append all values into a string" />
@@ -381,6 +386,7 @@
     <MESSAGE value="just added some code comments" />
     <MESSAGE value="added new ignores - added a private file into project folder" />
     <MESSAGE value="added new field in ignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="added new field in ignore" />
+    <MESSAGE value="added new field in ignore (requirements.txt)" />
+    <option name="LAST_COMMIT_MESSAGE" value="added new field in ignore (requirements.txt)" />
   </component>
 </project>
