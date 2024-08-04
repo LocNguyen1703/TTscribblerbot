@@ -51,34 +51,55 @@ scheduler = AsyncIOScheduler()
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
           'https://www.googleapis.com/auth/calendar']
 
+
 # STEP 4*: TESTING GOOGLE SHEETS API FUNCTIONS
 # "initialize Google authentication" - still NOT sure why I need this part
-creds = None
-if os.path.exists('token.pickle'):
-    with open('token.pickle', 'rb') as token:
-        creds = pickle.load(token)
-if not creds or not creds.valid:
-    if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-        """
-        I'm assuming following line is responsible for opening Google browser & authentication process,
-        which is not available in a headless VM
-        """
-        creds = flow.run_local_server(port=0)
-        # creds = flow.run_console()
-    with open('token.pickle', 'wb') as token:
-        pickle.dump(creds, token)
+def get_credentials():
+    credentials = None
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            credentials = pickle.load(token)
+    if not credentials or not credentials.valid:
+        if credentials and credentials.expired and credentials.refresh_token:
+            credentials.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            """
+            I'm assuming following line is responsible for opening Google browser & authentication process,
+            which is not available in a headless VM
+            """
+            credentials = flow.run_local_server(port=0)
+            # credentials = flow.run_console()
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(credentials, token)
 
-'''set up instances of Google Calendar and Google Sheets'''
-# instance for Google sheets - called "sheet"
+    return credentials
+
+
+def initialize_google_services(credentials, serviceSheets, sheets, serviceCalendar):
+    """set up instances of Google Calendar and Google Sheets"""
+    # instance for Google sheets - called "sheet"
+    credentials = get_credentials()
+    serviceSheets = build('sheets', 'v4', credentials=credentials)
+    sheets = service_sheets.spreadsheets()
+    # instance for Google Calendar - called "service_calendars"
+    # this service instance is from a class with multiple subclasses (my way of describing it)
+    # including an Events subclass - call service_calendars.events() to access
+    serviceCalendar = build('calendar', 'v3', credentials=credentials)
+
+
+# initializing everything the 1st time code runs just in case event loop does not run immediately
+creds = get_credentials()
+service_calendars = build('calendar', 'v3', credentials=creds)
 service_sheets = build('sheets', 'v4', credentials=creds)
 sheet = service_sheets.spreadsheets()
-# instance for Google Calendar - called "service_calendars"
-# this service instance is from a class with multiple subclasses (my way of describing it)
-# including an Events subclass - call service_calendars.events() to access
-service_calendars = build('calendar', 'v3', credentials=creds)
+
+
+@tasks.loop(hours=24)  # check every day
+async def refresh_token(interaction: discord.Interaction):
+    initialize_google_services(credentials=creds, serviceSheets=service_sheets,
+                               sheets=sheet, serviceCalendar=service_calendars)
+    print("Token refreshed if needed, Google spreadsheet & Calendar instances renewed")
 
 
 # STEP 2: MESSAGING FUNCTIONALITY
@@ -384,7 +405,8 @@ async def notifyEvents(interaction: discord.Interaction):
     await interaction.response.send_message(f'here are the {len(event_list)} events upcoming events: \n{response}\n'
                                             f'This message is only visible to you and will terminate in '
                                             f'T-minus 60 seconds', ephemeral=True, delete_after=60)
-    print(len(response+'here are the events upcoming events: \n\nThis message is only visible to you and will terminate in T-minus 60 seconds'))
+    print(
+        len(response + 'here are the events upcoming events: \n\nThis message is only visible to you and will terminate in T-minus 60 seconds'))
 
     """
     current message - will need to edit this for better understanding for user:
