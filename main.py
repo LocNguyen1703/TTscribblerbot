@@ -4,7 +4,8 @@
 import os
 import typing
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+# from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 
@@ -31,7 +32,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -49,7 +50,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 # initialize a scheduler instance - for scheduling timely messages
-scheduler = AsyncIOScheduler()
+# scheduler = AsyncIOScheduler()
+scheduler = BackgroundScheduler()
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
@@ -60,7 +62,11 @@ initializing everything the 1st time - Google service account will auto-authenti
 web browsers manually
 """
 creds = credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+
+#creds = service_account.Credentials.from_service_account_file(
+#    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
 # including an Events subclass - call service_calendars.events() to access
