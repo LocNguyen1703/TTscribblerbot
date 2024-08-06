@@ -56,8 +56,8 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
           'https://www.googleapis.com/auth/calendar']
 
 """
-initializing everything the 1st time code runs just in case event loop does not run immediately
-set up instances of Google Calendar and Google Sheets
+initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
+web browsers manually
 """
 creds = credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES)

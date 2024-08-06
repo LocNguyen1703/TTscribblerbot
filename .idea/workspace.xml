@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added code comments" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -371,7 +367,21 @@
       <option name="project" value="LOCAL" />
       <updated>1722764872274</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="might have finally found a workaround &quot;.run_console()&quot; function - by using a service account, Google automates the authentication process and we don't have to do it manually with the web-browser interactions">
+      <created>1722948275115</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1722948275115</updated>
+    </task>
+    <task id="LOCAL-00043" summary="added code comments">
+      <created>1722948454671</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1722948454671</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -386,8 +396,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="successfully added a &quot;add_note&quot; bot command - had trouble with syncing the new bot command to the bot and resolved it by reinviting the bot to the server. not sure if this is a 100% solution tho" />
-    <MESSAGE value="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later" />
     <MESSAGE value="just cleaned up code for note command a bit (not really that much cleaner)" />
     <MESSAGE value="cleaned up code in note command - batchUpdate() optimized (called only once to update everything)" />
     <MESSAGE value="updated functionality of note function &amp; added a badStandingCheck function to check and reply to user if they're in bad standing (might need to change how this function works in the future with the dictionaries)" />
@@ -411,6 +419,8 @@
     <MESSAGE value="adjusting the authentication process to be compatible with a Virtual Machine that can't access Google browsers (every time credentials is refreshed or whatnot, usually a browser is opened and you follow the steps; in this case, the process will print a URL to the console in the VM, and you copy-paste that URL in Google to continue the authentication process and paste the resulting authorization code back to console" />
     <MESSAGE value="reverted the authentication process back to before (interacting with web browser) - there's no &quot;run_console()&quot; method in oogle_auth_oauthlib.flow" />
     <MESSAGE value="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM" />
-    <option name="LAST_COMMIT_MESSAGE" value="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM" />
+    <MESSAGE value="might have finally found a workaround &quot;.run_console()&quot; function - by using a service account, Google automates the authentication process and we don't have to do it manually with the web-browser interactions" />
+    <MESSAGE value="added code comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="added code comments" />
   </component>
 </project>
