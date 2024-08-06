@@ -13,6 +13,7 @@ venv.bak/
 
 #Google Cloud Client ID
 credentials.json
+serviceaccount_auto_auth.json
 
 #the token pickle thing
 token.pickle

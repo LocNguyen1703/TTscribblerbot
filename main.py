@@ -22,12 +22,16 @@ import pickle
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from google.oauth2 import service_account
+from googleapiclient.errors import HttpError  # for specific error handling in the future
 
 # STEP 0: LOAD DISCORD BOT TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
+
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"
 
 # load ID of my google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -51,55 +55,55 @@ scheduler = AsyncIOScheduler()
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
           'https://www.googleapis.com/auth/calendar']
 
-
 # STEP 4*: TESTING GOOGLE SHEETS API FUNCTIONS
 # "initialize Google authentication" - still NOT sure why I need this part
-def get_credentials():
-    credentials = None
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
-            credentials = pickle.load(token)
-    if not credentials or not credentials.valid:
-        if credentials and credentials.expired and credentials.refresh_token:
-            credentials.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            """
-            I'm assuming following line is responsible for opening Google browser & authentication process,
-            which is not available in a headless VM
-            """
-            credentials = flow.run_local_server(port=0)
-            # credentials = flow.run_console()
-        with open('token.pickle', 'wb') as token:
-            pickle.dump(credentials, token)
+# def get_credentials():
+#     credentials = None
+#     if os.path.exists('token.pickle'):
+#         with open('token.pickle', 'rb') as token:
+#             credentials = pickle.load(token)
+#     if not credentials or not credentials.valid:
+#         if credentials and credentials.expired and credentials.refresh_token:
+#             credentials.refresh(Request())
+#         else:
+#             flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+#             """
+#             I'm assuming following line is responsible for opening Google browser & authentication process,
+#             which is not available in a headless VM
+#             """
+#             credentials = flow.run_local_server(port=0)
+#             # credentials = flow.run_console()
+#         with open('token.pickle', 'wb') as token:
+#             pickle.dump(credentials, token)
+#
+#     return credentials
 
-    return credentials
 
-
-def initialize_google_services(credentials, serviceSheets, sheets, serviceCalendar):
-    """set up instances of Google Calendar and Google Sheets"""
-    # instance for Google sheets - called "sheet"
-    credentials = get_credentials()
-    serviceSheets = build('sheets', 'v4', credentials=credentials)
-    sheets = service_sheets.spreadsheets()
-    # instance for Google Calendar - called "service_calendars"
-    # this service instance is from a class with multiple subclasses (my way of describing it)
-    # including an Events subclass - call service_calendars.events() to access
-    serviceCalendar = build('calendar', 'v3', credentials=credentials)
+# def initialize_google_services(credentials, serviceSheets, sheets, serviceCalendar):
+#     """set up instances of Google Calendar and Google Sheets"""
+#     # instance for Google sheets - called "sheet"
+#     credentials = get_credentials()
+#     serviceSheets = build('sheets', 'v4', credentials=credentials)
+#     sheets = service_sheets.spreadsheets()
+#     # instance for Google Calendar - called "service_calendars"
+#     # this service instance is from a class with multiple subclasses (my way of describing it)
+#     # including an Events subclass - call service_calendars.events() to access
+#     serviceCalendar = build('calendar', 'v3', credentials=credentials)
 
 
 # initializing everything the 1st time code runs just in case event loop does not run immediately
-creds = get_credentials()
+creds = credentials = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 service_calendars = build('calendar', 'v3', credentials=creds)
 service_sheets = build('sheets', 'v4', credentials=creds)
 sheet = service_sheets.spreadsheets()
 
 
-@tasks.loop(hours=24)  # check every day
-async def refresh_token(interaction: discord.Interaction):
-    initialize_google_services(credentials=creds, serviceSheets=service_sheets,
-                               sheets=sheet, serviceCalendar=service_calendars)
-    print("Token refreshed if needed, Google spreadsheet & Calendar instances renewed")
+# @tasks.loop(hours=24)  # check every day
+# async def refresh_token(interaction: discord.Interaction):
+#     initialize_google_services(credentials=creds, serviceSheets=service_sheets,
+#                                sheets=sheet, serviceCalendar=service_calendars)
+#     print("Token refreshed if needed, Google spreadsheet & Calendar instances renewed")
 
 
 # STEP 2: MESSAGING FUNCTIONALITY
@@ -257,17 +261,17 @@ async def noteCommand(interaction: discord.Interaction):
             response = sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
         except Exception as e:
             print(f"An error occurred: {e}")
-            await interaction.followup.send(f"An error occurred: {e}")
+            await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
 
         # confirm message that notes have been added
-        await interaction.followup.send(f"Notes added to cells successfully.")
+        await interaction.followup.send(f"Notes added to cells successfully.", ephemeral=True)
 
         print(notes_dict)
         print(scores_dict)
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        await interaction.followup.send(f"An error occurred: {e}")
+        await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
         # apparently followup class doesn't have ephemeral and delete_after parameters like interaction.response...
 
 
@@ -380,7 +384,7 @@ async def cancelAllMessages(interaction: discord.Interaction):
 @bot.tree.command(name='events_check')
 async def notifyEvents(interaction: discord.Interaction):
     now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-    events_result = service_calendars.events().list(calendarId='primary', timeMin=now,
+    events_result = service_calendars.events().list(calendarId='nloc124@gmail.com', timeMin=now,
                                                     maxResults=30, singleEvents=True,
                                                     orderBy='startTime').execute()
     # events_result is a "response body" (kinda like the request body we created in note command)
@@ -391,22 +395,28 @@ async def notifyEvents(interaction: discord.Interaction):
     """
     events = events_result['items']  # I can either use .get() or "[]" to access categories in response body
 
-    if not events: await interaction.response.send_message("no upcoming events found. This message is only visible "
-                                                           "to you and will terminate in T-minus 60 seconds",
-                                                           ephemeral=True, delete_after=60)
-    event_list = []
-    for event in events:
-        end = event['end']['dateTime'][11:16]  # isolate 11th-19th characters (end-time) from random formatting noise
-        start = event['start']['dateTime']
-        start = start.replace('T', ' ', 1).replace(start[16:25], '-' + end, 1)
-        event_list.append(f"{start} - {event['summary']}")
+    if not events:
+        await interaction.response.send_message("no upcoming events found. This message is only visible "
+                                                "to you and will terminate in T-minus 60 seconds",
+                                                ephemeral=True, delete_after=60)
 
-    response: str = "\n".join(event_list)
-    await interaction.response.send_message(f'here are the {len(event_list)} events upcoming events: \n{response}\n'
-                                            f'This message is only visible to you and will terminate in '
-                                            f'T-minus 60 seconds', ephemeral=True, delete_after=60)
-    print(
-        len(response + 'here are the events upcoming events: \n\nThis message is only visible to you and will terminate in T-minus 60 seconds'))
+    # this else statement is really important - if this is not here, both response messages will be sent no matter
+    # what and will result in the "message has already been responded to before" error
+    else:
+        event_list = []
+        for event in events:
+            end = event['end']['dateTime'][
+                  11:16]  # isolate 11th-19th characters (end-time) from random formatting noise
+            start = event['start']['dateTime']
+            start = start.replace('T', ' ', 1).replace(start[16:25], '-' + end, 1)
+            event_list.append(f"{start} - {event['summary']}")
+
+        response: str = "\n".join(event_list)
+        await interaction.response.send_message(f'here are the {len(event_list)} events upcoming events: \n{response}\n'
+                                                f'This message is only visible to you and will terminate in '
+                                                f'T-minus 60 seconds', ephemeral=True, delete_after=60)
+        print(
+            len(response + 'here are the events upcoming events: \n\nThis message is only visible to you and will terminate in T-minus 60 seconds'))
 
     """
     current message - will need to edit this for better understanding for user:

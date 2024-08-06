@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="reverted the authentication process back to before (interacting with web browser) - there's no &quot;run_console()&quot; method in oogle_auth_oauthlib.flow">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -363,7 +364,14 @@
       <option name="project" value="LOCAL" />
       <updated>1721986873741</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM">
+      <created>1722764872274</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1722764872274</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -378,7 +386,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed the test function - turns out an interaction instance can only respond to a command ONCE. I have multiple values in my read range, which makes the bot respond multiple times, which causes an error. Solution is to append all values into an array then use join() function, or append all values into a string" />
     <MESSAGE value="successfully added a &quot;add_note&quot; bot command - had trouble with syncing the new bot command to the bot and resolved it by reinviting the bot to the server. not sure if this is a 100% solution tho" />
     <MESSAGE value="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later" />
     <MESSAGE value="just cleaned up code for note command a bit (not really that much cleaner)" />
@@ -403,6 +410,7 @@
     <MESSAGE value="added new field in ignore (requirements.txt)" />
     <MESSAGE value="adjusting the authentication process to be compatible with a Virtual Machine that can't access Google browsers (every time credentials is refreshed or whatnot, usually a browser is opened and you follow the steps; in this case, the process will print a URL to the console in the VM, and you copy-paste that URL in Google to continue the authentication process and paste the resulting authorization code back to console" />
     <MESSAGE value="reverted the authentication process back to before (interacting with web browser) - there's no &quot;run_console()&quot; method in oogle_auth_oauthlib.flow" />
-    <option name="LAST_COMMIT_MESSAGE" value="reverted the authentication process back to before (interacting with web browser) - there's no &quot;run_console()&quot; method in oogle_auth_oauthlib.flow" />
+    <MESSAGE value="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM" />
+    <option name="LAST_COMMIT_MESSAGE" value="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM" />
   </component>
 </project>
