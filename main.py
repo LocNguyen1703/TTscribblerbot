@@ -4,7 +4,7 @@
 import os
 import typing
 
-# from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
@@ -17,7 +17,8 @@ from discord import app_commands
 from discord.ext import commands, tasks
 from responses import get_response
 
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, timezone
+import pytz
 
 import pickle
 from googleapiclient.discovery import build
@@ -32,9 +33,9 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
-# load ID of my google spreadsheet of choice and ranges of cells I want to access/edit from .env
+# load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 RANGE1 = os.getenv('TEST_READ_RANGE')
 RANGE2 = os.getenv('TEST_WRITE_RANGE')
@@ -50,8 +51,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 # initialize a scheduler instance - for scheduling timely messages
-# scheduler = AsyncIOScheduler()
-scheduler = BackgroundScheduler()
+scheduler = AsyncIOScheduler()
+# scheduler = BackgroundScheduler()
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
@@ -62,10 +63,10 @@ initializing everything the 1st time - Google service account will auto-authenti
 web browsers manually
 """
 creds = credentials = service_account.Credentials.from_service_account_file(
-    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-#creds = service_account.Credentials.from_service_account_file(
-#    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+# creds = service_account.Credentials.from_service_account_file(
+#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -335,7 +336,12 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
     function now works, but will need to do full test run
         - not sure if this really schedules one-time messages or if the messages repeat every day
     """
+    pacific = pytz.timezone('America/Los_Angeles')
     send_time = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
+    # send_time = send_time.replace(tzinfo=timezone.utc)  # convert to UTC time
+    send_time = pacific.localize(send_time)
+    # send_time = send_time.astimezone(pytz.UTC)  # Convert to UTC time
+
     scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message, file_path])
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
                                             f'with file: {file_path}. Message only visible to you and will terminate '
@@ -495,7 +501,7 @@ async def insertEvent(interaction: discord.Interaction, title: str, location: st
         },
     }
     try:
-        event = service_calendars.events().insert(calendarId='primary', body=event_body).execute()
+        event = service_calendars.events().insert(calendarId='nloc124@gmail.com', body=event_body).execute()
         await interaction.response.send_message(f'added event: {event}. this message is only visible to you and will '
                                                 f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
     except Exception as e:  # do research - try to look for the exact error(s) in this situation

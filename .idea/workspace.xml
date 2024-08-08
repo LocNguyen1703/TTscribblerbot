@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="added code comments">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="now apparently there's something wrong with the scheduler and it's out of sync with the bot, so scheduled messages aren't sent on time and therefore destroyed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -391,7 +391,14 @@
       <option name="project" value="LOCAL" />
       <updated>1722948546927</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="now apparently there's something wrong with the scheduler and it's out of sync with the bot, so scheduled messages aren't sent on time and therefore destroyed">
+      <created>1722952344822</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1722952344822</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -406,7 +413,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="just cleaned up code for note command a bit (not really that much cleaner)" />
     <MESSAGE value="cleaned up code in note command - batchUpdate() optimized (called only once to update everything)" />
     <MESSAGE value="updated functionality of note function &amp; added a badStandingCheck function to check and reply to user if they're in bad standing (might need to change how this function works in the future with the dictionaries)" />
     <MESSAGE value="successfully created bot command to set timely messages using APScheduler package from discord" />
@@ -431,6 +437,7 @@
     <MESSAGE value="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM" />
     <MESSAGE value="might have finally found a workaround &quot;.run_console()&quot; function - by using a service account, Google automates the authentication process and we don't have to do it manually with the web-browser interactions" />
     <MESSAGE value="added code comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="added code comments" />
+    <MESSAGE value="now apparently there's something wrong with the scheduler and it's out of sync with the bot, so scheduled messages aren't sent on time and therefore destroyed" />
+    <option name="LAST_COMMIT_MESSAGE" value="now apparently there's something wrong with the scheduler and it's out of sync with the bot, so scheduled messages aren't sent on time and therefore destroyed" />
   </component>
 </project>
