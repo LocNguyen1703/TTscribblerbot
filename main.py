@@ -402,6 +402,8 @@ async def notifyEvents(interaction: discord.Interaction):
             # start = event['start']['dateTime']  # start time
             # start = start.replace('T', ' ', 1).replace(start[16:25], '-' + end, 1)
 
+            # apparently this method of retrieving start & end times ensures whether the event is all-day
+            # or has a start & end time, the code will retrieve the according values
             start = event['start'].get('dateTime', event['start'].get('date'))
             end = event['end'].get('dateTime', event['end'].get('date'))
 
