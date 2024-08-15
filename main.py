@@ -33,7 +33,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -62,11 +62,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-creds = credentials = service_account.Credentials.from_service_account_file(
-   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -180,12 +180,27 @@ async def noteCommand(interaction: discord.Interaction):
     requests = []
 
     # add reason for every "x" found
-    event_titles = x_check[0]
+    # check to see if there's any event added - so that there's no out-of-index error when creating event_titles
+    try:
+        event_titles = x_check[0]
+    except IndexError:
+        await interaction.response.send_message("no event created - this message is only visible to you and will "
+                                                "terminate in T-minus 60 seconds", ephemeral=True, delete_after=60)
     # access specific row & column of cell i want to add notes in
 
     # clear dictionaries before re-updating
     scores_dict.clear()
     notes_dict.clear()
+
+    # Fetch spreadsheet metadata - for retrieving sheet_id of the sheet we're operating in
+    spreadsheet = sheet.get(spreadsheetId=SPREADSHEET_ID).execute()
+
+    # retrieve the correct sheet_id in the spreadsheet before making edit requests
+    if len(spreadsheet.get('sheets', [])) == 0:  # if somehow there's no sheet created in spreadsheet
+        raise ValueError("no sheet created")
+    sheet_id = spreadsheet.get('sheets', [])[0]['properties']['sheetId']  # assumes 1st sheet in spreadsheet is
+                                                                          # active_rolls
+
     try:
         # apparently bot times out if response command is not sent immediately after bot command is processed
         # defer() function lets bot know command is still being processed & keeps it from timing out
@@ -206,7 +221,8 @@ async def noteCommand(interaction: discord.Interaction):
             requests.append({
                 'updateCells': {
                     'range': {
-                        'sheetId': 0,  # Default to the first sheet; change if needed
+                        'sheetId': sheet_id,  # value 0 will default to the first sheet; change if needed
+                        # (e.g. if sheet's name is changed)
                         'startRowIndex': rowIndex,  # Convert A1 notation to row index (0-based)
                         'endRowIndex': rowIndex + 1,  # One row
                         'startColumnIndex': columnIndex,  # Convert column letter to index (0-based)
@@ -273,7 +289,7 @@ async def badStandingCheck(interaction: discord.Interaction):
     response: str = f"hey {username}! you currently have {scores_dict.get(username)} points, which means " \
                     f"you're{good_standing_check} in bad standing!\n" \
                     f"reasons: {notes_dict.get(username)}\nif you have any questions please go annoy brother Scribe, " \
-                    f"I am but a vessel of his intelligence"
+                    f"I am but a vessel of their intelligence"
 
     try:
         # send a DM to user instead of a public message in channel with user.send()
@@ -361,8 +377,8 @@ async def cancelAllMessages(interaction: discord.Interaction):
 @bot.tree.command(name='events_check')
 async def notifyEvents(interaction: discord.Interaction):
     now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-    events_result = service_calendars.events().list(calendarId='nloc124@gmail.com', timeMin=now,
-                                                    maxResults=30, singleEvents=True,
+    events_result = service_calendars.events().list(calendarId='bkshlhck01pl08tgfif8qj89no@group.calendar.google.com',
+                                                    timeMin=now, maxResults=30, singleEvents=True,
                                                     orderBy='startTime').execute()
     # events_result is a "response body" (kinda like the request body we created in note command)
 
@@ -382,11 +398,21 @@ async def notifyEvents(interaction: discord.Interaction):
     else:
         event_list = []
         for event in events:
-            end = event['end']['dateTime'][
-                  11:16]  # isolate 11th-19th characters (end-time) from random formatting noise
-            start = event['start']['dateTime']
-            start = start.replace('T', ' ', 1).replace(start[16:25], '-' + end, 1)
+            # end = event['end']['dateTime'][11:16]  # isolate 11th-19th characters (end-time) from random formatting noise
+            # start = event['start']['dateTime']  # start time
+            # start = start.replace('T', ' ', 1).replace(start[16:25], '-' + end, 1)
+
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            end = event['end'].get('dateTime', event['end'].get('date'))
+
+            if 'T' in start:
+                start = start.replace('T', ' ', 1)  # Convert to readable format
+            if 'T' in end:
+                end = end[11:16]  # Extract just the time part
+                start = start.replace(start[16:25], '-' + end, 1)
+
             event_list.append(f"{start} - {event['summary']}")
+            # event_list.append(f"{start} - {event['summary']} (Ends at {end})")
 
         response: str = "\n".join(event_list)
         await interaction.response.send_message(f'here are the {len(event_list)} events upcoming events: \n{response}\n'
@@ -410,37 +436,22 @@ here are the 10 events upcoming events:
 2024-08-06T18:00:00-07:00 - invite-only workshops/events
 This message is only visible to you and will terminate in T-minus 60 seconds
 
-message after some editing (much more understandable): 
-here are the 28 events upcoming events: 
-2024-07-23 10:00-11:00 - random example event title
-2024-07-23 18:00-20:00 - invite-only workshops/events
-2024-07-24 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-07-27 10:00-12:00 - Accelerate deep work session (10-12pm)
-2024-07-29 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-07-30 18:00-20:00 - invite-only workshops/events
-2024-07-31 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-03 10:00-12:00 - Accelerate deep work session (10-12pm)
-2024-08-05 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-06 18:00-20:00 - invite-only workshops/events
-2024-08-07 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-08 18:00-19:00 - Regional Conference Meeting III - Lambda Delta
-2024-08-08 18:00-19:00 - Regionals meeting
-2024-08-10 10:00-12:00 - Accelerate deep work session (10-12pm)
-2024-08-12 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-13 18:00-20:00 - invite-only workshops/events
-2024-08-14 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-17 10:00-12:00 - Accelerate deep work session (10-12pm)
-2024-08-19 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-20 18:00-20:00 - invite-only workshops/events
-2024-08-21 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-24 10:00-12:00 - Accelerate deep work session (10-12pm)
-2024-08-26 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-27 18:00-20:00 - invite-only workshops/events
-2024-08-28 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-08-31 10:00-12:00 - Accelerate deep work session (10-12pm)
-2024-09-02 17:00-19:00 - Accelerate deep work session (5-7pm)
-2024-09-03 18:00-20:00 - invite-only workshops/events
+message after some editing - taking into account whole-day events (much more understandable): 
+here are the 10 events upcoming events: 
+2024-08-21 - Week of Welcome  (Ends at 2024-08-26)
+2024-08-25 18:00:00-07:00 - Chapter Zero (Ends at 22:00)
+2024-08-26 - First Day of Classes (Ends at 2024-08-27)
+2024-08-27 11:00:00-07:00 - Recruitment: Tabling (Ends at 18:00)
+2024-08-29 18:00:00-07:00 - Polish Week Event & pro-devo sign language workshop (potentially Pro-devo dresscode workshop) (Ends at 20:00)
+2024-08-30 18:00:00-07:00 - Alpha Delta Initiation  (Ends at 20:00)
+2024-09-02 - Holiday - No Classes (Ends at 2024-09-03)
+2024-09-02 19:00:00-07:00 - Formal Chapter (Ends at 21:00)
+2024-09-03 17:00:00-07:00 - Recruitment: Meet-the-Bros (Ends at 19:00)
+2024-09-04 17:30:00-07:00 - Recruitment: Comm-serv event (Ends at 20:00)
 This message is only visible to you and will terminate in T-minus 60 seconds
+
+
+
     """
 
 
@@ -501,7 +512,8 @@ async def insertEvent(interaction: discord.Interaction, title: str, location: st
         },
     }
     try:
-        event = service_calendars.events().insert(calendarId='nloc124@gmail.com', body=event_body).execute()
+        event = service_calendars.events().insert(calendarId='bkshlhck01pl08tgfif8qj89no@group.calendar.google.com',
+                                                  body=event_body).execute()
         await interaction.response.send_message(f'added event: {event}. this message is only visible to you and will '
                                                 f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
     except Exception as e:  # do research - try to look for the exact error(s) in this situation
