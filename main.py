@@ -198,8 +198,8 @@ async def noteCommand(interaction: discord.Interaction):
     # retrieve the correct sheet_id in the spreadsheet before making edit requests
     if len(spreadsheet.get('sheets', [])) == 0:  # if somehow there's no sheet created in spreadsheet
         raise ValueError("no sheet created")
-    sheet_id = spreadsheet.get('sheets', [])[0]['properties']['sheetId']  # assumes 1st sheet in spreadsheet is
-                                                                          # active_rolls
+    sheet_id = spreadsheet.get('sheets', [])[0]['properties']['sheetId']  # assumes 1st sheet in spreadsheet is ALWAYS
+    # active_rolls
 
     try:
         # apparently bot times out if response command is not sent immediately after bot command is processed
@@ -246,6 +246,8 @@ async def noteCommand(interaction: discord.Interaction):
         }
 
         try:
+            # if there's no content in request body (i.e. if no one is late to anything at all & no x's is marked)
+            # there will be an HttpError 400: "must specify at least one request" - nothing to worry about
             response = sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -378,7 +380,7 @@ async def cancelAllMessages(interaction: discord.Interaction):
 async def notifyEvents(interaction: discord.Interaction):
     now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     events_result = service_calendars.events().list(calendarId='bkshlhck01pl08tgfif8qj89no@group.calendar.google.com',
-                                                    timeMin=now, maxResults=30, singleEvents=True,
+                                                    timeMin=now, maxResults=29, singleEvents=True,
                                                     orderBy='startTime').execute()
     # events_result is a "response body" (kinda like the request body we created in note command)
 
@@ -408,13 +410,14 @@ async def notifyEvents(interaction: discord.Interaction):
             end = event['end'].get('dateTime', event['end'].get('date'))
 
             if 'T' in start:
-                start = start.replace('T', ' ', 1)  # Convert to readable format
+                # start = start.replace('T', ' ', 1)
+                start = start.replace('T', ' ', 1).replace(start[16:25], ' ', 1)  # Convert to readable format
             if 'T' in end:
                 end = end[11:16]  # Extract just the time part
-                start = start.replace(start[16:25], '-' + end, 1)
+                # start = start.replace(start[16:25], '-' + end, 1)
 
-            event_list.append(f"{start} - {event['summary']}")
-            # event_list.append(f"{start} - {event['summary']} (Ends at {end})")
+            # event_list.append(f"{start} - {event['summary']}")
+            event_list.append(f"{start} - {event['summary']} (Ends at {end})")
 
         response: str = "\n".join(event_list)
         await interaction.response.send_message(f'here are the {len(event_list)} events upcoming events: \n{response}\n'
@@ -510,6 +513,36 @@ async def insertEvent(interaction: discord.Interaction, title: str, location: st
         },
         'end': {
             'dateTime': end_datetime,
+            'timeZone': 'America/Los_Angeles',
+        },
+    }
+    try:
+        event = service_calendars.events().insert(calendarId='bkshlhck01pl08tgfif8qj89no@group.calendar.google.com',
+                                                  body=event_body).execute()
+        await interaction.response.send_message(f'added event: {event}. this message is only visible to you and will '
+                                                f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+    except Exception as e:  # do research - try to look for the exact error(s) in this situation
+        await interaction.response.send_message(f'an error occurred: {e}. this message is only visible to you and will '
+                                                f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+    # return NotImplementedError("no code here yet...")
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO INSERT A WHOLE-DAY EVENT
+@bot.tree.command(name="add_whole_day_event")
+async def insertWholeDayEvent(interaction: discord.Interaction, title: str, location: str, description: str,
+                              start_date: str, end_date: str):
+    # when specifying dates, end_date is EXCLUSIVE - if start_date & end_date are only 1 day apart - event turns out
+    # to be 1-day only instead of 2-day long
+    event_body = {
+        'summary': title,
+        'location': location,
+        'description': description,
+        'start': {
+            'date': start_date,
+            'timeZone': 'America/Los_Angeles',  # time zone in Cali belongs to America/Los_Angeles instead of UTC!!
+        },
+        'end': {
+            'date': end_date,
             'timeZone': 'America/Los_Angeles',
         },
     }

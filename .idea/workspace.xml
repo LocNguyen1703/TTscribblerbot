@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited all functionalities to fit with the official Scribe's calendar and spreadsheet. All commands work for now - testing needed">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="just some code commenting">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -412,7 +412,14 @@
       <option name="project" value="LOCAL" />
       <updated>1723709611930</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="just some code commenting">
+      <created>1723710443350</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1723710443350</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -427,7 +434,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="successfully created bot command to set timely messages using APScheduler package from discord" />
     <MESSAGE value="adjusted the message scheduler function, now I can set weekly, hourly, &quot;minutely&quot;, custom-time messages (input formatting not flexible...)" />
     <MESSAGE value="added a bot command to cancel ALL scheduled messages (is there a way to only cancel certain messages or &quot;jobs&quot;?)" />
     <MESSAGE value="no important updates, just code commenting and cleaning" />
@@ -452,6 +458,7 @@
     <MESSAGE value="now apparently there's something wrong with the scheduler and it's out of sync with the bot, so scheduled messages aren't sent on time and therefore destroyed" />
     <MESSAGE value="successfully fixed all commands - testing underway" />
     <MESSAGE value="edited all functionalities to fit with the official Scribe's calendar and spreadsheet. All commands work for now - testing needed" />
-    <option name="LAST_COMMIT_MESSAGE" value="edited all functionalities to fit with the official Scribe's calendar and spreadsheet. All commands work for now - testing needed" />
+    <MESSAGE value="just some code commenting" />
+    <option name="LAST_COMMIT_MESSAGE" value="just some code commenting" />
   </component>
 </project>
