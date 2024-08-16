@@ -186,7 +186,6 @@ async def noteCommand(interaction: discord.Interaction):
     except IndexError:
         await interaction.response.send_message("no event created - this message is only visible to you and will "
                                                 "terminate in T-minus 60 seconds", ephemeral=True, delete_after=60)
-    # access specific row & column of cell i want to add notes in
 
     # clear dictionaries before re-updating
     scores_dict.clear()
@@ -199,12 +198,21 @@ async def noteCommand(interaction: discord.Interaction):
     if len(spreadsheet.get('sheets', [])) == 0:  # if somehow there's no sheet created in spreadsheet
         raise ValueError("no sheet created")
     sheet_id = spreadsheet.get('sheets', [])[0]['properties']['sheetId']  # assumes 1st sheet in spreadsheet is ALWAYS
-    # active_rolls
+                                                                          # active_rolls
 
     try:
         # apparently bot times out if response command is not sent immediately after bot command is processed
         # defer() function lets bot know command is still being processed & keeps it from timing out
         await interaction.response.defer()
+
+        # print(x_check[1:]) apparently x_check[1:] only contains lines until the first 'x' is detected
+        # if other names below the line where "x" appears don't have any x's - if they used bad_standing_check command
+        # it'd be erroneous - I need to process x_check[1:] first
+
+        if len(x_check[1:]) != len(names):
+            for i in range(len(names) - len(x_check[1:])):
+                empty_row = []
+                x_check.append(empty_row)
 
         for k in range(len(x_check[1:])):
             for i in range(len(x_check[1:][k])):
@@ -256,8 +264,8 @@ async def noteCommand(interaction: discord.Interaction):
         # confirm message that notes have been added
         await interaction.followup.send(f"Notes added to cells successfully.", ephemeral=True)
 
-        print(notes_dict)
-        print(scores_dict)
+        print(notes_dict)  # for debugging
+        print(scores_dict)  # for debugging
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -266,11 +274,9 @@ async def noteCommand(interaction: discord.Interaction):
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO RETURN BAD STANDING STATUS TO USER
-'''
-IMPORTANT NOTE: this command only works after Scribe has run the /notes command 
-to set up local memory for bad standing points
-'''
 
+# IMPORTANT NOTE: this command only works AFTER Scribe has run the /notes command
+# to set up local memory for bad standing points
 
 @bot.tree.command(name='bad_standing_check')
 async def badStandingCheck(interaction: discord.Interaction):
