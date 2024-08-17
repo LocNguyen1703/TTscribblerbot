@@ -8,6 +8,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
+import asyncio
+import functools
 
 import discord
 from dotenv import load_dotenv
@@ -198,7 +200,7 @@ async def noteCommand(interaction: discord.Interaction):
     if len(spreadsheet.get('sheets', [])) == 0:  # if somehow there's no sheet created in spreadsheet
         raise ValueError("no sheet created")
     sheet_id = spreadsheet.get('sheets', [])[0]['properties']['sheetId']  # assumes 1st sheet in spreadsheet is ALWAYS
-                                                                          # active_rolls
+    # active_rolls
 
     try:
         # apparently bot times out if response command is not sent immediately after bot command is processed
@@ -318,12 +320,14 @@ async def print_message(message: str, file_path: str):
     CHANNEL_ID: int = 1037860754524741634
     channel = bot.get_channel(CHANNEL_ID)
 
+    edited = "\n\n".join(message.split("[br]"))  # "[br]" my own syntax for line breaks ("\n\n") - change if needed
+
     if channel:
         if file_path.lower() != "none":
-            file = discord.File(file_path.strip('"'))  # remove quotation marks
-            await channel.send(message, file=file)
+            file = discord.File(file_path.strip('"'))  # remove quotation marks - file paths don't have ""
+            await channel.send(edited, file=file)
         else:
-            await channel.send(message)
+            await channel.send(edited)
 
 
 # actual scheduler function
@@ -336,7 +340,7 @@ async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str
                                                  second=None if second.lower() == "none" else second),
                       args=[message, file_path])
     await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
-                                            f'Message only visible to you and terminates in T-minus 60 seconds',
+                                            f'Message is only visible to you and will terminate in T-minus 60 seconds',
                                             ephemeral=True, delete_after=60)
     # return NotImplementedError("no code yet...")
 
@@ -368,17 +372,58 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
 
     scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message, file_path])
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
-                                            f'with file: {file_path}. Message only visible to you and will terminate '
-                                            f'in T-minus 60 seconds', ephemeral=True, delete_after=60)
+                                            f'with file: {file_path}. Message is only visible to you and will '
+                                            f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO CANCEL ALL MESSAGES
 @bot.tree.command(name='cancel_all_scheduled_messages')
 async def cancelAllMessages(interaction: discord.Interaction):
     scheduler.remove_all_jobs()
-    await interaction.response.send_message("all scheduled messages have been canceled. This message is only visible "
+    await interaction.response.send_message("all scheduled messages have been canceled. Message is only visible "
                                             "to you and will terminate in T-minus 60 seconds",
                                             ephemeral=True, delete_after=60)
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE OTHER BOT COMMANDS
+# helper function to deal with the function objects in dictionary
+'''
+work in progress - may have to abandon this idea
+async def execute_command(coro, *args, **kwargs):
+    try:
+        await coro(*args, **kwargs)
+    except Exception as e:
+        # Handle exceptions in a way that doesn't affect the response of the command
+        print(f"Error executing command: {e}")
+
+
+@bot.tree.command(name="set_bot_function")
+async def setBotFunction(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str,
+                         function: str):
+
+    # add more command names below in the same format as needed
+    commands_dict = {
+        "note": functools.partial(execute_command, noteCommand.callback, interaction),
+        "bad_standing_check": functools.partial(execute_command, badStandingCheck.callback, interaction),
+        "events_check": functools.partial(execute_command, notifyEvents.callback, interaction)
+    }
+
+    input_function = commands_dict.get(function)
+
+    if input_function is None:
+        await interaction.response.send_message("your command name does not match any existing commands. "
+                                                "Try another command", ephemeral=True, delete_after=60)
+        return
+
+    scheduler.add_job(input_function, CronTrigger(day=None if day.lower() == "none" else day,
+                                                  hour=None if hour.lower() == "none" else hour,
+                                                  minute=None if minute.lower() == "none" else minute,
+                                                  second=None if second.lower() == "none" else second))
+
+    await interaction.response.send_message(f'function scheduled: "{function}". Message is only visible to you and '
+                                            f'will terminate in T-minus 60 seconds',
+                                            ephemeral=True, delete_after=60)
+'''
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO NOTIFY EVENTS IN WEEK/MONTH
