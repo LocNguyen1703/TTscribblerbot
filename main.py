@@ -316,29 +316,38 @@ async def badStandingCheck(interaction: discord.Interaction):
 
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
 # separate function to print message
-async def print_message(message: str, file_path: str):
-    CHANNEL_ID: int = 1037860754524741634
-    channel = bot.get_channel(CHANNEL_ID)
-
+async def print_message(message: str, file_path: str, input_channel: discord.TextChannel):
     edited = "\n\n".join(message.split("[br]"))  # "[br]" my own syntax for line breaks ("\n\n") - change if needed
 
-    if channel:
+    if input_channel:
         if file_path.lower() != "none":
             file = discord.File(file_path.strip('"'))  # remove quotation marks - file paths don't have ""
-            await channel.send(edited, file=file)
+            await input_channel.send(edited, file=file)
         else:
-            await channel.send(edited)
+            await input_channel.send(edited)
+
+
+# helper function for autocompleting channel choice for messages
+async def channel_name_autocomplete(interaction: discord.Interaction, current: str):
+    channels = interaction.guild.text_channels
+    return [
+        app_commands.Choice(name=channel.name, value=channel.name)
+        for channel in channels if current.lower() in channel.name.lower()
+    ]
 
 
 # actual scheduler function
 @bot.tree.command(name='set_timely_message')
+@app_commands.autocomplete(channel_name=channel_name_autocomplete)
 async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str,
-                           message: str, file_path: str):
+                           message: str, file_path: str, channel_name: str):
+    channel = discord.utils.get(interaction.guild.text_channels, name=channel_name)
+
     scheduler.add_job(print_message, CronTrigger(day=None if day.lower() == "none" else day,
                                                  hour=None if hour.lower() == "none" else hour,
                                                  minute=None if minute.lower() == "none" else minute,
                                                  second=None if second.lower() == "none" else second),
-                      args=[message, file_path])
+                      args=[message, file_path, channel])
     await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
                                             f'Message is only visible to you and will terminate in T-minus 60 seconds',
                                             ephemeral=True, delete_after=60)
@@ -347,7 +356,9 @@ async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str
 
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE A ONE-TIME MESSAGE
 @bot.tree.command(name='set_message')
-async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, message: str, file_path: str):
+@app_commands.autocomplete(channel_name=channel_name_autocomplete)
+async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, message: str, file_path: str,
+                            channel_name: str):
     """
     ideas:
         maybe I can use the same method as the set_timely_message command above, just after the message is sent,
@@ -370,7 +381,10 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
     send_time = pacific.localize(send_time)
     # send_time = send_time.astimezone(pytz.UTC)  # Convert to UTC time
 
-    scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message, file_path])
+    # get channel from channel_name
+    channel = discord.utils.get(interaction.guild.text_channels, name=channel_name)
+
+    scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message, file_path, channel])
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
                                             f'with file: {file_path}. Message is only visible to you and will '
                                             f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
@@ -424,6 +438,37 @@ async def setBotFunction(interaction: discord.Interaction, day: str, hour: str, 
                                             f'will terminate in T-minus 60 seconds',
                                             ephemeral=True, delete_after=60)
 '''
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO OUTPUT A LIST OF GUIDELINES ON HOW TO USE BOT COMMANDS
+@bot.tree.command(name='help')
+async def guidelines(interaction: discord.Interaction):
+    response: str = f'Here are some tips on how to use the bot commands\n' \
+                    f'- "set_message" command: format to enter dateTime is YYYY-MM-DD HH:MM (use 24hr system)\n' \
+                    f' - file_path: copy/paste path of file you want to send from your computer OR "none" for ' \
+                    f'no file\n' \
+                    f'- "set_timely_message" command: you can specify "none" or add a value to create a specific ' \
+                    f'time you want\n' \
+                    f' - second: values from 0 to 59 OR "none" - at which second message is sent EVERY MINUTE\n' \
+                    f' - minute: values from 0 to 59 OR "none" - at which minute message is sent EVERY HOUR\n' \
+                    f' - hour: values from 0 to 23 OR "none" - at which hour message is sent EVERY DAY\n' \
+                    f' - day: values from 1 to 31 OR "none" - on which day message is sent EVERY MONTH\n' \
+                    f' - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
+                    f'for no file\n' \
+                    f'- "note" command: no input needed - for Scribe-only purposes\n' \
+                    f'- "add_event" & "add_whole_day_event" commands - no input needed - for Scribe-only purposes\n' \
+                    f'- "bad_standing_check" command: no input needed - bot will DM you your bad standing status\n' \
+                    f'- "cancel_all_scheduled_messages" command: no input needed - NOTIFY BROTHER SCRIBE ' \
+                    f'IF YOU USE IT!\n' \
+                    f'- "events_check" command: - no input needed\n' \
+                    f'- "test" command: no input needed - for Scribe-only purposes\n' \
+                    f'refer to Brother Scribe for more instructions if needed!' \
+
+    await interaction.response.send_message("Sure thing! check you DM's for a general guideline on how to use the bot."
+                                            " This message is only available to you and will terminate in T-minus "
+                                            "60 seconds", ephemeral=True, delete_after=60)
+    await interaction.user.send(response)
+    # return NotImplementedError("no code here yet...")
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO NOTIFY EVENTS IN WEEK/MONTH
