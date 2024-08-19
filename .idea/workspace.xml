@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited the message-scheduling commands to work for all channels (no longer require channel_id), and also included an autocomplete option">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="created a command to send timely bad-standing status checkins to all members explicitly listed in the bad-standing google sheet (and also created a &quot;help&quot; command that spits out guidelines on how to use the bot from last commit but forgot to update)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -82,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00005" summary="made a .gitignore file (i thought it was already made &amp; pushed but apparently it's in a folder that makes it &quot;unversioned&quot;)">
-      <created>1716540561245</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1716540561245</updated>
     </task>
     <task id="LOCAL-00006" summary="just committed a file in .idea that didn't get included in the last push">
       <created>1716540787735</created>
@@ -426,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1724038559123</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="created a command to send timely bad-standing status checkins to all members explicitly listed in the bad-standing google sheet (and also created a &quot;help&quot; command that spits out guidelines on how to use the bot from last commit but forgot to update)">
+      <created>1724065209778</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1724065209778</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -441,7 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="edited the bad_standing_check command - bot now sends a DM to user instead of a public message to channel (that way Brother's bad standing points are private to them)" />
     <MESSAGE value="edited both the set message commands - the bot-response message is now only visible to command caller and command also includes functionality to attach files" />
     <MESSAGE value="edited the API authentication and instance creation process to include authenticating for Google Calendar API and a Google API service instance." />
     <MESSAGE value="added an events_check command that returns 10 events on Google Calendar from command's real call time. How the event information is syntaxed according to Google Calendar API is weird, will need to understand it and find a way to edit it (could just edit the string itself instead of find a different way to fetch each event's info)" />
@@ -466,6 +465,7 @@
     <MESSAGE value="edited the &quot;note&quot; command to account for rows where members are not late to any event" />
     <MESSAGE value="edited the commands that schedule messages to allow for multiple-paragraph messages. working on a command to schedule other bot functions &amp; not just messages but may have to abandon the function to meet the release date" />
     <MESSAGE value="edited the message-scheduling commands to work for all channels (no longer require channel_id), and also included an autocomplete option" />
-    <option name="LAST_COMMIT_MESSAGE" value="edited the message-scheduling commands to work for all channels (no longer require channel_id), and also included an autocomplete option" />
+    <MESSAGE value="created a command to send timely bad-standing status checkins to all members explicitly listed in the bad-standing google sheet (and also created a &quot;help&quot; command that spits out guidelines on how to use the bot from last commit but forgot to update)" />
+    <option name="LAST_COMMIT_MESSAGE" value="created a command to send timely bad-standing status checkins to all members explicitly listed in the bad-standing google sheet (and also created a &quot;help&quot; command that spits out guidelines on how to use the bot from last commit but forgot to update)" />
   </component>
 </project>
