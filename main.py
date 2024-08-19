@@ -45,7 +45,8 @@ X_RANGE = os.getenv('X_CHECK_RANGE')
 
 # STEP 1: BOT SETUP
 intents: Intents = Intents.default()
-intents.message_content = True
+intents.message_content = True  # enables access to message content for bot
+intents.members = True  # enables access to guild member's info for bot
 # client: Client = Client(intents=intents)  # maybe this is a "client message" instance - to read incoming user messages
 
 # create a "bot command" instance - I'm assuming this is used for SPECIFIC commands like "/test" that
@@ -109,17 +110,17 @@ async def on_ready() -> None:
 
 
 # STEP 4: HANDLE INCOMING MESSAGE
-@bot.event
-async def on_message(message: Message) -> None:
-    # if the message was sent by the bot itself, halt instead of keep responding & creating an infinite loop
-    if message.author == bot.user:
-        return
-    username: str = str(message.author)
-    user_message: str = message.content
-    channel: str = str(message.channel)
-
-    print(f'[{channel}, {username}: "{user_message}"]')
-    await send_message(message, user_message)
+# @bot.event
+# async def on_message(message: Message) -> None:
+#     # if the message was sent by the bot itself, halt instead of keep responding & creating an infinite loop
+#     if message.author == bot.user:
+#         return
+#     username: str = str(message.author)
+#     user_message: str = message.content
+#     channel: str = str(message.channel)
+#
+#     print(f'[{channel}, {username}: "{user_message}"]')
+#     await send_message(message, user_message)
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO ACCESS & PRINT GOOGLE SHEET CONTENT
@@ -315,7 +316,7 @@ async def badStandingCheck(interaction: discord.Interaction):
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
-# separate function to print message
+# helper function to print message
 async def print_message(message: str, file_path: str, input_channel: discord.TextChannel):
     edited = "\n\n".join(message.split("[br]"))  # "[br]" my own syntax for line breaks ("\n\n") - change if needed
 
@@ -325,6 +326,27 @@ async def print_message(message: str, file_path: str, input_channel: discord.Tex
             await input_channel.send(edited, file=file)
         else:
             await input_channel.send(edited)
+
+
+# helper function to dm message
+async def print_dm(message: str, file_path: str, guild: discord.Guild, role_name: str):
+    role = discord.utils.get(guild.roles, name=role_name)  # get role object from input role name
+    edited = "\n\n".join(message.split("[br]"))
+    # filter and put all members with same role object into a list
+    members_with_roles = [member for member in guild.members if role in member.roles and not member.bot]
+
+    for member in members_with_roles:
+        try:
+            if file_path.lower() != "none":
+                file = discord.File(file_path.strip('"'))  # remove quotation marks - file paths don't have ""
+                await member.send(edited, file=file)
+            else:
+                await member.send(edited)
+            print("function ran successfully")  # for debugging
+        except discord.Forbidden:
+            print(f"Could not send DM to {member.name} (DMs might be disabled).")
+        except Exception as e:
+            print(f"Failed to send DM to {member.name}: {e}")
 
 
 # helper function for autocompleting channel choice for messages
@@ -388,6 +410,74 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
                                             f'with file: {file_path}. Message is only visible to you and will '
                                             f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
+@bot.tree.command(name='set_timely_dm')
+async def setTimelyDM(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str,
+                      message: str, file_path: str, role_name: str):
+
+    scheduler.add_job(print_dm, CronTrigger(day=None if day.lower() == "none" else day,
+                                            hour=None if hour.lower() == "none" else hour,
+                                            minute=None if minute.lower() == "none" else minute,
+                                            second=None if second.lower() == "none" else second),
+                      args=[message, file_path, interaction.guild, role_name])
+
+    await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
+                                            f'Message is only visible to you and will terminate in T-minus 60 seconds',
+                                            ephemeral=True, delete_after=60)
+
+
+# STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
+@bot.tree.command(name='set_dm')
+async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message: str, file_path: str,
+                       role_name: str):
+    pacific = pytz.timezone('America/Los_Angeles')
+    send_time = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
+    send_time = pacific.localize(send_time)
+
+    scheduler.add_job(print_dm, DateTrigger(run_date=send_time),
+                      args=[message, file_path, interaction.guild, role_name])
+    await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
+                                            f'with file: {file_path}. Message is only visible to you and will '
+                                            f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+# testing command: /set_dm date_time:2024-08-18 22:14 message:random dm - please work file_path:none role_name:random_testing_role
+
+
+# helper function to send dm's about member's bad-standing status
+async def print_bad_status(guild: discord.Guild):
+    # filter and put all members with same role object into a list
+    members_lst = [member for member in guild.members if member.display_name in notes_dict.keys()]
+
+    for member in members_lst:
+        username: str = member.display_name
+        good_standing_check: str = ' not' if float(scores_dict.get(username)) < 2 else ""
+
+        response: str = f"hey {username}! you currently have {scores_dict.get(username)} points, which means " \
+                        f"you're{good_standing_check} in bad standing!\n" \
+                        f"reasons: {notes_dict.get(username)}\nif you have any questions please go annoy brother Scribe, " \
+                        f"I am but a vessel of their intelligence"
+        try:
+            await member.send(response, delete_after=60)
+            print("function ran successfully")  # for debugging
+        except discord.Forbidden:
+            print(f"Could not send DM to {member.name} (DMs might be disabled).")
+        except Exception as e:
+            print(f"Failed to send DM to {member.name}: {e}")
+
+
+# STEP 4*: EXTRA-SPECIFIC BOT COMMAND TO SCHEDULE BAD-STANDING STATUS MESSAGES
+@bot.tree.command(name='timely_bad_standing_dm')
+async def timelyBadStandingDM(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str):
+
+    scheduler.add_job(print_bad_status, CronTrigger(day=None if day.lower() == "none" else day,
+                                                    hour=None if hour.lower() == "none" else hour,
+                                                    minute=None if minute.lower() == "none" else minute,
+                                                    second=None if second.lower() == "none" else second),
+                      args=[interaction.guild])
+
+    await interaction.response.send_message(f'message scheduled. Message is only visible to you and will '
+                                            f'terminate in T-minus 90 seconds', ephemeral=True, delete_after=90)
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO CANCEL ALL MESSAGES

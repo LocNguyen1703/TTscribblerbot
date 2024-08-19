@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited the commands that schedule messages to allow for multiple-paragraph messages. working on a command to schedule other bot functions &amp; not just messages but may have to abandon the function to meet the release date">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited the message-scheduling commands to work for all channels (no longer require channel_id), and also included an autocomplete option">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -82,20 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00003" summary="re-wrote the code for basic bot (found in YouTube tutorial)">
-      <created>1716193612401</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1716193612401</updated>
-    </task>
-    <task id="LOCAL-00004" summary="fixed push conflicts - hopefully it works this time">
-      <created>1716194074465</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1716194074465</updated>
     </task>
     <task id="LOCAL-00005" summary="made a .gitignore file (i thought it was already made &amp; pushed but apparently it's in a folder that makes it &quot;unversioned&quot;)">
       <created>1716540561245</created>
@@ -426,7 +412,21 @@
       <option name="project" value="LOCAL" />
       <updated>1723894131750</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="edited the commands that schedule messages to allow for multiple-paragraph messages. working on a command to schedule other bot functions &amp; not just messages but may have to abandon the function to meet the release date">
+      <created>1724038435832</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1724038435833</updated>
+    </task>
+    <task id="LOCAL-00053" summary="edited the message-scheduling commands to work for all channels (no longer require channel_id), and also included an autocomplete option">
+      <created>1724038559123</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1724038559123</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -441,7 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="successfully added a one-time message scheduling command - instead of scheduling recurring messages, this allows drafting and scheduling a one-time message at a certain date/time" />
     <MESSAGE value="edited the bad_standing_check command - bot now sends a DM to user instead of a public message to channel (that way Brother's bad standing points are private to them)" />
     <MESSAGE value="edited both the set message commands - the bot-response message is now only visible to command caller and command also includes functionality to attach files" />
     <MESSAGE value="edited the API authentication and instance creation process to include authenticating for Google Calendar API and a Google API service instance." />
@@ -466,6 +465,7 @@
     <MESSAGE value="code commenting &amp; parameter changing. &#10;added an add_whole_day_event command to add whole-day events instead of timed events" />
     <MESSAGE value="edited the &quot;note&quot; command to account for rows where members are not late to any event" />
     <MESSAGE value="edited the commands that schedule messages to allow for multiple-paragraph messages. working on a command to schedule other bot functions &amp; not just messages but may have to abandon the function to meet the release date" />
-    <option name="LAST_COMMIT_MESSAGE" value="edited the commands that schedule messages to allow for multiple-paragraph messages. working on a command to schedule other bot functions &amp; not just messages but may have to abandon the function to meet the release date" />
+    <MESSAGE value="edited the message-scheduling commands to work for all channels (no longer require channel_id), and also included an autocomplete option" />
+    <option name="LAST_COMMIT_MESSAGE" value="edited the message-scheduling commands to work for all channels (no longer require channel_id), and also included an autocomplete option" />
   </component>
 </project>
