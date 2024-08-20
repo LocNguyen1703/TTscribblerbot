@@ -447,17 +447,43 @@ async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message
 
 # helper function to send dm's about member's bad-standing status
 async def print_bad_status(guild: discord.Guild):
+    # fetch values from event attendance - check to see if there are any "x"
+    x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
+    x_check = x_fetch.get('values', [])
+
+    NAME_RANGE = os.getenv('NAME_RANGE')
+    names_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=NAME_RANGE).execute()
+    names = names_fetch.get('values', [])
+
+    SCORES_RANGE = os.getenv('SCORES_RANGE')
+    scores_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=SCORES_RANGE).execute()
+    scores = scores_fetch.get('values', [])
+
     # filter and put all members with same role object into a list
-    members_lst = [member for member in guild.members if member.display_name in notes_dict.keys()]
+    members_lst = [member for member in guild.members if [member.display_name] in names]
+
+    reason: str = ""
+    event_titles = x_check[0]
 
     for member in members_lst:
         username: str = member.display_name
-        good_standing_check: str = ' not' if float(scores_dict.get(username)) < 2 else ""
+        row = names.index([username])
 
-        response: str = f"hey {username}! you currently have {scores_dict.get(username)} points, which means " \
+        if not x_check[row+1]: reason = "None added"
+        else:
+            for i in range(len(event_titles)):
+                if x_check[row+1][i] == "x":  # row+1 takes into account mismatch caused by 1st row of event_titles
+                    reason += "-missed " + event_titles[i] + " (+1)\n"
+                elif x_check[row+1][i] == "t":
+                    reason += "-late to " + event_titles[i] + " (+0.5)\n"
+
+        good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
+
+        response: str = f"hey {username}! you currently have {scores[row][0]} points, which means " \
                         f"you're{good_standing_check} in bad standing!\n" \
-                        f"reasons: {notes_dict.get(username)}\nif you have any questions please go annoy brother Scribe, " \
+                        f"reasons: {reason}\nif you have any questions please go annoy brother Scribe, " \
                         f"I am but a vessel of their intelligence"
+        reason = ""  # reset reason for next iteration
         try:
             await member.send(response, delete_after=60)
             print("function ran successfully")  # for debugging

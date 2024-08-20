@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited badStandingCheck command -  command can run independently of the &quot;note&quot; command &amp; no global dictionaries needed (i.e. hopefully no more VM lagging cause of heavy load or resource limitation or whatever)" />
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="apparently note command now works without timing out - no need for interaction.response.defer()">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -79,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00008" summary="enabled Google Sheets API according to google's Quickstart page, downloaded the Google Cloud Client ID json supposedly used to identify any app I create through google's OAuth servers, and updated .gitignore">
-      <created>1716707352653</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1716707352653</updated>
     </task>
     <task id="LOCAL-00009" summary="updated a testing spreadsheet's ID, and access/edit cell ranges of choice">
       <created>1716708139386</created>
@@ -423,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1724176626228</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="apparently note command now works without timing out - no need for interaction.response.defer()">
+      <created>1724176818841</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1724176818841</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -438,7 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added an events_check command that returns 10 events on Google Calendar from command's real call time. How the event information is syntaxed according to Google Calendar API is weird, will need to understand it and find a way to edit it (could just edit the string itself instead of find a different way to fetch each event's info)" />
     <MESSAGE value="just added code comments" />
     <MESSAGE value="edited events_check command - command will now notify of up to 30 upcoming events from command's real call time. Also edited response message to show date and time (in 24hr unit) and event title" />
     <MESSAGE value="just added code comments and basis for an add_event command" />
@@ -463,6 +465,7 @@
     <MESSAGE value="created a command to send timely bad-standing status checkins to all members explicitly listed in the bad-standing google sheet (and also created a &quot;help&quot; command that spits out guidelines on how to use the bot from last commit but forgot to update)" />
     <MESSAGE value="reverted the code for setup phase to work with the headless VM" />
     <MESSAGE value="edited badStandingCheck command -  command can run independently of the &quot;note&quot; command &amp; no global dictionaries needed (i.e. hopefully no more VM lagging cause of heavy load or resource limitation or whatever)" />
-    <option name="LAST_COMMIT_MESSAGE" value="edited badStandingCheck command -  command can run independently of the &quot;note&quot; command &amp; no global dictionaries needed (i.e. hopefully no more VM lagging cause of heavy load or resource limitation or whatever)" />
+    <MESSAGE value="apparently note command now works without timing out - no need for interaction.response.defer()" />
+    <option name="LAST_COMMIT_MESSAGE" value="apparently note command now works without timing out - no need for interaction.response.defer()" />
   </component>
 </project>
