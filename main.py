@@ -35,7 +35,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -65,11 +65,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-creds = credentials = service_account.Credentials.from_service_account_file(
-   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -153,11 +153,6 @@ async def testCommand(interaction: discord.Interaction):
         await interaction.response.send_message("\n".join(i for i in response_message))
 
 
-# a dictionary to store all notes
-notes_dict = {}
-scores_dict = {}
-
-
 # STEP 4*: SPECIFIC BOT COMMAND TO ADD NOTES TO CELLS
 @bot.tree.command(name='note')
 async def noteCommand(interaction: discord.Interaction):
@@ -190,10 +185,6 @@ async def noteCommand(interaction: discord.Interaction):
         await interaction.response.send_message("no event created - this message is only visible to you and will "
                                                 "terminate in T-minus 60 seconds", ephemeral=True, delete_after=60)
 
-    # clear dictionaries before re-updating
-    scores_dict.clear()
-    notes_dict.clear()
-
     # Fetch spreadsheet metadata - for retrieving sheet_id of the sheet we're operating in
     spreadsheet = sheet.get(spreadsheetId=SPREADSHEET_ID).execute()
 
@@ -208,25 +199,12 @@ async def noteCommand(interaction: discord.Interaction):
         # defer() function lets bot know command is still being processed & keeps it from timing out
         await interaction.response.defer()
 
-        # print(x_check[1:]) apparently x_check[1:] only contains lines until the first 'x' is detected
-        # if other names below the line where "x" appears don't have any x's - if they used bad_standing_check command
-        # it'd be erroneous - I need to process x_check[1:] first
-
-        if len(x_check[1:]) != len(names):
-            for i in range(len(names) - len(x_check[1:])):
-                empty_row = []
-                x_check.append(empty_row)
-
         for k in range(len(x_check[1:])):
             for i in range(len(x_check[1:][k])):
                 if x_check[1:][k][i] == "x":
                     reason += "-missed " + event_titles[i] + " (+1)\n"
                 elif x_check[1:][k][i] == "t":
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
-
-            # update notes dictionary
-            notes_dict.update({names[k][0]: reason if reason else "None added"})
-            scores_dict.update({names[k][0]: scores[k][0]})
 
             # Create the request body to add the note to the specified cell
             requests.append({
@@ -259,7 +237,7 @@ async def noteCommand(interaction: discord.Interaction):
         try:
             # if there's no content in request body (i.e. if no one is late to anything at all & no x's is marked)
             # there will be an HttpError 400: "must specify at least one request" - nothing to worry about
-            response = sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
+            sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
         except Exception as e:
             print(f"An error occurred: {e}")
             await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
@@ -267,8 +245,8 @@ async def noteCommand(interaction: discord.Interaction):
         # confirm message that notes have been added
         await interaction.followup.send(f"Notes added to cells successfully.", ephemeral=True)
 
-        print(notes_dict)  # for debugging
-        print(scores_dict)  # for debugging
+        # print(notes_dict)  # for debugging
+        # print(scores_dict)  # for debugging
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -284,7 +262,6 @@ async def noteCommand(interaction: discord.Interaction):
 @bot.tree.command(name='bad_standing_check')
 async def badStandingCheck(interaction: discord.Interaction):
     username: str = interaction.user.display_name
-
     '''
     thought: instead of having a middle-man (creating notes THEN fetch notes back THEN reply to user message)
     --> why not create note directly then send (i.e. instead of creating notes for all members create notes for the 
@@ -294,12 +271,46 @@ async def badStandingCheck(interaction: discord.Interaction):
     
     edit: i now got it to work, but is there a better way so that i don't have to use global vars? (i.e. i'm thinking 
     of a database, but idk if that's too complicated for this level and for maintenance..)
+    
+    2nd edit - (maybe) a better way: I could scan for the user's name, then look up that user's row in the sheet, 
+    then recreate all the notes for that user and send that
     '''
-    good_standing_check: str = ' not' if float(scores_dict.get(username)) < 2 else ""
+    # fetch values from event attendance - check to see if there are any "x"
+    x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
+    x_check = x_fetch.get('values', [])
 
-    response: str = f"hey {username}! you currently have {scores_dict.get(username)} points, which means " \
+    NAME_RANGE = os.getenv('NAME_RANGE')
+    names_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=NAME_RANGE).execute()
+    names = names_fetch.get('values', [])
+
+    SCORES_RANGE = os.getenv('SCORES_RANGE')
+    scores_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=SCORES_RANGE).execute()
+    scores = scores_fetch.get('values', [])
+
+    reason: str = ""
+
+    # get the row index of the user's name in the sheet
+    row = names.index([username])  # taking into account first row of event_titles
+
+    try:
+        event_titles = x_check[0]
+    except IndexError:
+        await interaction.response.send_message("no event created - this message is only visible to you and will "
+                                                "terminate in T-minus 60 seconds", ephemeral=True, delete_after=60)
+
+    if len(x_check[row+1]) == 0: reason = "None added"
+    else:
+        for i in range(len(event_titles)):
+            if x_check[row+1][i] == "x":  # row+1 takes into account mismatch caused by 1st row of event_titles
+                reason += "-missed " + event_titles[i] + " (+1)\n"
+            elif x_check[row+1][i] == "t":
+                reason += "-late to " + event_titles[i] + " (+0.5)\n"
+
+    good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
+
+    response: str = f"hey {username}! you currently have {scores[row][0]} points, which means " \
                     f"you're{good_standing_check} in bad standing!\n" \
-                    f"reasons: {notes_dict.get(username)}\nif you have any questions please go annoy brother Scribe, " \
+                    f"reasons: {reason}\nif you have any questions please go annoy brother Scribe, " \
                     f"I am but a vessel of their intelligence"
 
     try:
