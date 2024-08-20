@@ -194,71 +194,61 @@ async def noteCommand(interaction: discord.Interaction):
     sheet_id = spreadsheet.get('sheets', [])[0]['properties']['sheetId']  # assumes 1st sheet in spreadsheet is ALWAYS
     # active_rolls
 
+    # apparently bot times out if response command is not sent immediately after bot command is processed
+    # defer() function lets bot know command is still being processed & keeps it from timing out
+    # await interaction.response.defer()
+
+    for k in range(len(x_check[1:])):
+        for i in range(len(x_check[1:][k])):
+            if x_check[1:][k][i] == "x":
+                reason += "-missed " + event_titles[i] + " (+1)\n"
+            elif x_check[1:][k][i] == "t":
+                reason += "-late to " + event_titles[i] + " (+0.5)\n"
+
+        # Create the request body to add the note to the specified cell
+        requests.append({
+            'updateCells': {
+                'range': {
+                    'sheetId': sheet_id,  # value 0 will default to the first sheet; change if needed
+                    # (e.g. if sheet's name is changed)
+                    'startRowIndex': rowIndex,  # Convert A1 notation to row index (0-based)
+                    'endRowIndex': rowIndex + 1,  # One row
+                    'startColumnIndex': columnIndex,  # Convert column letter to index (0-based)
+                    'endColumnIndex': columnIndex + 1  # One column
+                },
+                'rows': [{
+                    'values': [{
+                        'note': reason if reason else ''  # this cleans note if the 'x''s are somehow deleted
+                    }]
+                }],
+                'fields': 'note'
+            }
+        })
+
+        rowIndex += 1
+        reason = ""
+
+    # Execute the batch update request
+    body = {
+        'requests': requests
+    }
+
     try:
-        # apparently bot times out if response command is not sent immediately after bot command is processed
-        # defer() function lets bot know command is still being processed & keeps it from timing out
-        await interaction.response.defer()
-
-        for k in range(len(x_check[1:])):
-            for i in range(len(x_check[1:][k])):
-                if x_check[1:][k][i] == "x":
-                    reason += "-missed " + event_titles[i] + " (+1)\n"
-                elif x_check[1:][k][i] == "t":
-                    reason += "-late to " + event_titles[i] + " (+0.5)\n"
-
-            # Create the request body to add the note to the specified cell
-            requests.append({
-                'updateCells': {
-                    'range': {
-                        'sheetId': sheet_id,  # value 0 will default to the first sheet; change if needed
-                        # (e.g. if sheet's name is changed)
-                        'startRowIndex': rowIndex,  # Convert A1 notation to row index (0-based)
-                        'endRowIndex': rowIndex + 1,  # One row
-                        'startColumnIndex': columnIndex,  # Convert column letter to index (0-based)
-                        'endColumnIndex': columnIndex + 1  # One column
-                    },
-                    'rows': [{
-                        'values': [{
-                            'note': reason if reason else ''  # this cleans note if the 'x''s are somehow deleted
-                        }]
-                    }],
-                    'fields': 'note'
-                }
-            })
-
-            rowIndex += 1
-            reason = ""
-
-        # Execute the batch update request
-        body = {
-            'requests': requests
-        }
-
-        try:
-            # if there's no content in request body (i.e. if no one is late to anything at all & no x's is marked)
-            # there will be an HttpError 400: "must specify at least one request" - nothing to worry about
-            sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
-
-        # confirm message that notes have been added
-        await interaction.followup.send(f"Notes added to cells successfully.", ephemeral=True)
-
-        # print(notes_dict)  # for debugging
-        # print(scores_dict)  # for debugging
-
+        # if there's no content in request body (i.e. if no one is late to anything at all & no x's is marked)
+        # there will be an HttpError 400: "must specify at least one request" - nothing to worry about
+        sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
     except Exception as e:
         print(f"An error occurred: {e}")
-        await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
-        # apparently followup class doesn't have ephemeral and delete_after parameters like interaction.response...
+        await interaction.response.send_message(f"An error occurred: {e}", ephemeral=True)
+
+    # confirm message that notes have been added
+    await interaction.response.send_message(f"Notes added to cells successfully.", ephemeral=True)
+
+    # print(notes_dict)  # for debugging
+    # print(scores_dict)  # for debugging
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO RETURN BAD STANDING STATUS TO USER
-
-# IMPORTANT NOTE: this command only works AFTER Scribe has run the /notes command
-# to set up local memory for bad standing points
-
 @bot.tree.command(name='bad_standing_check')
 async def badStandingCheck(interaction: discord.Interaction):
     username: str = interaction.user.display_name
