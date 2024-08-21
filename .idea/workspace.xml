@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="apparently note command now works without timing out - no need for interaction.response.defer()">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited print_bad_status to also work independently from &quot;note&quot; command (i.e. print_bad_status no longer needs help from any global dictionaries that contain scores and notes)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,13 +81,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00009" summary="updated a testing spreadsheet's ID, and access/edit cell ranges of choice">
-      <created>1716708139386</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1716708139386</updated>
     </task>
     <task id="LOCAL-00010" summary="added a google sheets API testing function (found from a tutorial bot)">
       <created>1716709158551</created>
@@ -426,7 +418,14 @@
       <option name="project" value="LOCAL" />
       <updated>1724176818841</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="edited print_bad_status to also work independently from &quot;note&quot; command (i.e. print_bad_status no longer needs help from any global dictionaries that contain scores and notes)">
+      <created>1724178264430</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1724178264430</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -441,7 +440,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="just added code comments" />
     <MESSAGE value="edited events_check command - command will now notify of up to 30 upcoming events from command's real call time. Also edited response message to show date and time (in 24hr unit) and event title" />
     <MESSAGE value="just added code comments and basis for an add_event command" />
     <MESSAGE value="edited response message in events_check command - much more understandable now, and added an add_event command - able to add 1 single event to Google Calendar" />
@@ -466,6 +464,7 @@
     <MESSAGE value="reverted the code for setup phase to work with the headless VM" />
     <MESSAGE value="edited badStandingCheck command -  command can run independently of the &quot;note&quot; command &amp; no global dictionaries needed (i.e. hopefully no more VM lagging cause of heavy load or resource limitation or whatever)" />
     <MESSAGE value="apparently note command now works without timing out - no need for interaction.response.defer()" />
-    <option name="LAST_COMMIT_MESSAGE" value="apparently note command now works without timing out - no need for interaction.response.defer()" />
+    <MESSAGE value="edited print_bad_status to also work independently from &quot;note&quot; command (i.e. print_bad_status no longer needs help from any global dictionaries that contain scores and notes)" />
+    <option name="LAST_COMMIT_MESSAGE" value="edited print_bad_status to also work independently from &quot;note&quot; command (i.e. print_bad_status no longer needs help from any global dictionaries that contain scores and notes)" />
   </component>
 </project>
