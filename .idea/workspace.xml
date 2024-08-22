@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited print_bad_status to also work independently from &quot;note&quot; command (i.e. print_bad_status no longer needs help from any global dictionaries that contain scores and notes)">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="reverted to the previous setup process that works with the current Oracle Cloud VM configs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00010" summary="added a google sheets API testing function (found from a tutorial bot)">
-      <created>1716709158551</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1716709158551</updated>
     </task>
     <task id="LOCAL-00011" summary="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;">
       <created>1716711164758</created>
@@ -425,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1724178264430</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="reverted to the previous setup process that works with the current Oracle Cloud VM configs">
+      <created>1724234487020</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1724234487021</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -440,7 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="edited events_check command - command will now notify of up to 30 upcoming events from command's real call time. Also edited response message to show date and time (in 24hr unit) and event title" />
     <MESSAGE value="just added code comments and basis for an add_event command" />
     <MESSAGE value="edited response message in events_check command - much more understandable now, and added an add_event command - able to add 1 single event to Google Calendar" />
     <MESSAGE value="just added some code comments" />
@@ -465,6 +465,7 @@
     <MESSAGE value="edited badStandingCheck command -  command can run independently of the &quot;note&quot; command &amp; no global dictionaries needed (i.e. hopefully no more VM lagging cause of heavy load or resource limitation or whatever)" />
     <MESSAGE value="apparently note command now works without timing out - no need for interaction.response.defer()" />
     <MESSAGE value="edited print_bad_status to also work independently from &quot;note&quot; command (i.e. print_bad_status no longer needs help from any global dictionaries that contain scores and notes)" />
-    <option name="LAST_COMMIT_MESSAGE" value="edited print_bad_status to also work independently from &quot;note&quot; command (i.e. print_bad_status no longer needs help from any global dictionaries that contain scores and notes)" />
+    <MESSAGE value="reverted to the previous setup process that works with the current Oracle Cloud VM configs" />
+    <option name="LAST_COMMIT_MESSAGE" value="reverted to the previous setup process that works with the current Oracle Cloud VM configs" />
   </component>
 </project>

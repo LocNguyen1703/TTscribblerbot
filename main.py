@@ -35,7 +35,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -47,7 +47,6 @@ X_RANGE = os.getenv('X_CHECK_RANGE')
 intents: Intents = Intents.default()
 intents.message_content = True  # enables access to message content for bot
 intents.members = True  # enables access to guild member's info for bot
-# client: Client = Client(intents=intents)  # maybe this is a "client message" instance - to read incoming user messages
 
 # create a "bot command" instance - I'm assuming this is used for SPECIFIC commands like "/test" that
 # user types in message
@@ -65,11 +64,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-creds = credentials = service_account.Credentials.from_service_account_file(
-   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -299,13 +298,14 @@ async def badStandingCheck(interaction: discord.Interaction):
     good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
 
     response: str = f"hey {username}! you currently have {scores[row][0]} points, which means " \
-                    f"you're{good_standing_check} in bad standing!\n" \
-                    f"reasons: {reason}\nif you have any questions please go annoy brother Scribe, " \
-                    f"I am but a vessel of their intelligence"
+                    f"you're{good_standing_check} in bad standing!\nreasons: {reason}\nif you have any questions" \
+                    f" please go annoy brother Scribe, I am but a vessel of their intelligence.\nThis message" \
+                    f" will terminate in T-minus 90 seconds - you can use /bad_standing_check command to check" \
+                    f" your bad-standing status anytime"
 
     try:
         # send a DM to user instead of a public message in channel with user.send()
-        await interaction.user.send(response)
+        await interaction.user.send(response, delete_after=90)
         await interaction.response.send_message(
             "I DM'd your status, this message is only visible to you and will terminate in T-minus 60 seconds",
             ephemeral=True, delete_after=60)
@@ -332,11 +332,13 @@ async def print_message(message: str, file_path: str, input_channel: discord.Tex
 # helper function to dm message
 async def print_dm(message: str, file_path: str, guild: discord.Guild, role_name: str):
     role = discord.utils.get(guild.roles, name=role_name)  # get role object from input role name
+    print(role)  # for debugging
     edited = "\n\n".join(message.split("[br]"))
     # filter and put all members with same role object into a list
     members_with_roles = [member for member in guild.members if role in member.roles and not member.bot]
 
     for member in members_with_roles:
+        print(member.roles)  # for debugging
         try:
             if file_path.lower() != "none":
                 file = discord.File(file_path.strip('"'))  # remove quotation marks - file paths don't have ""
@@ -353,9 +355,28 @@ async def print_dm(message: str, file_path: str, guild: discord.Guild, role_name
 # helper function for autocompleting channel choice for messages
 async def channel_name_autocomplete(interaction: discord.Interaction, current: str):
     channels = interaction.guild.text_channels
+
+    if not current:
+        return [app_commands.Choice(name=channel.name, value=channel.name) for channel in channels[:25]]
+
+    matches = [channel for channel in channels if current.lower() in channel.name.lower()]
     return [
         app_commands.Choice(name=channel.name, value=channel.name)
-        for channel in channels if current.lower() in channel.name.lower()
+        for channel in matches[:25]
+    ]
+
+
+# helper function for autocompleting role choice for messages
+async def role_name_autocomplete(interaction: discord.Interaction, current: str):
+    roles = interaction.guild.roles
+
+    if not current:
+        return [app_commands.Choice(name=role.name, value=role.name) for role in roles[:25]]
+
+    matches = [role for role in roles if current.lower() in role.name.lower()]
+    return [
+        app_commands.Choice(name=role.name, value=role.name)
+        for role in matches[:25]
     ]
 
 
@@ -415,6 +436,7 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
 
 # STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
 @bot.tree.command(name='set_timely_dm')
+@app_commands.autocomplete(role_name=role_name_autocomplete)
 async def setTimelyDM(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str,
                       message: str, file_path: str, role_name: str):
 
@@ -431,6 +453,7 @@ async def setTimelyDM(interaction: discord.Interaction, day: str, hour: str, min
 
 # STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
 @bot.tree.command(name='set_dm')
+@app_commands.autocomplete(role_name=role_name_autocomplete)
 async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message: str, file_path: str,
                        role_name: str):
     pacific = pytz.timezone('America/Los_Angeles')
@@ -479,13 +502,14 @@ async def print_bad_status(guild: discord.Guild):
 
         good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
 
-        response: str = f"hey {username}! you currently have {scores[row][0]} points, which means " \
-                        f"you're{good_standing_check} in bad standing!\n" \
+        response: str = f"hey {username}, here is your weekly bad-standing status update! you currently have " \
+                        f"{scores[row][0]} points, which means you're{good_standing_check} in bad standing!\n" \
                         f"reasons: {reason}\nif you have any questions please go annoy brother Scribe, " \
-                        f"I am but a vessel of their intelligence"
+                        f"I am but a vessel of their intelligence.\n" \
+                        f"you can use command /bad_standing_check to check you status any time!"
         reason = ""  # reset reason for next iteration
         try:
-            await member.send(response, delete_after=60)
+            await member.send(response)
             print("function ran successfully")  # for debugging
         except discord.Forbidden:
             print(f"Could not send DM to {member.name} (DMs might be disabled).")
@@ -579,13 +603,23 @@ async def guidelines(interaction: discord.Interaction):
                     f'IF YOU USE IT!\n' \
                     f'- "events_check" command: - no input needed\n' \
                     f'- "test" command: no input needed - for Scribe-only purposes\n' \
-                    f'refer to Brother Scribe for more instructions if needed!' \
+                    f'- "set-dm" command: schedules a DM to all people under any certain role' \
+                    f' - date_time: enter date-time of message with format YYYY-MM-DD HH:MM (use 24hr system)\n' \
+                    f' - message: message to send at scheduled time\n' \
+                    f' - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
+                    f'for no file\n' \
+                    f' - role_name: name of role you want your DM to reach to\n' \
+                    f'- "set_timely_dm" command: sets timely DM to all people under any certain role' \
+                    f' - role_name: name of role you want your DM to reach to\n' \
+                    f' - all other inputs use similar format as "set_timely_message_ command\n' \
+                    f'- "timely_bad_standing_dm" command: for Scribe-only purposes - DO NOT TOUCH!\n' \
+                    f'refer to Brother Scribe for more instructions if needed!\n' \
+                    f'message will terminate in T-minus 90 seconds' \
 
     await interaction.response.send_message("Sure thing! check you DM's for a general guideline on how to use the bot."
                                             " This message is only available to you and will terminate in T-minus "
-                                            "60 seconds", ephemeral=True, delete_after=60)
-    await interaction.user.send(response)
-    # return NotImplementedError("no code here yet...")
+                                            "90 seconds", ephemeral=True, delete_after=60)
+    await interaction.user.send(response, delete_after=90)
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO NOTIFY EVENTS IN WEEK/MONTH
