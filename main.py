@@ -35,7 +35,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -64,11 +64,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-# creds = credentials = service_account.Credentials.from_service_account_file(
-#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+creds = credentials = service_account.Credentials.from_service_account_file(
+   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-creds = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+# creds = service_account.Credentials.from_service_account_file(
+#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
