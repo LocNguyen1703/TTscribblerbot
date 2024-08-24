@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="reverted the authentication process back to the compatible-with-headless-VM version">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="eidted all commands that deal with scheduling timely messages to use 'America/Los_Angeles' timezone - testing needed" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,13 +79,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00013" summary="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much">
-      <created>1716715353926</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1716715353926</updated>
     </task>
     <task id="LOCAL-00014" summary="added simple explanation comments">
       <created>1716808679903</created>
@@ -426,7 +416,14 @@
       <option name="project" value="LOCAL" />
       <updated>1724314736614</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="eidted all commands that deal with scheduling timely messages to use 'America/Los_Angeles' timezone - testing needed">
+      <created>1724462545177</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1724462545177</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -441,7 +438,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="just added some code comments" />
     <MESSAGE value="added new ignores - added a private file into project folder" />
     <MESSAGE value="added new field in ignore" />
     <MESSAGE value="added new field in ignore (requirements.txt)" />
@@ -466,6 +462,7 @@
     <MESSAGE value="reverted to the previous setup process that works with the current Oracle Cloud VM configs" />
     <MESSAGE value="improved autocomplete functionalities to also generate some suggestions even with no inputs" />
     <MESSAGE value="reverted the authentication process back to the compatible-with-headless-VM version" />
-    <option name="LAST_COMMIT_MESSAGE" value="reverted the authentication process back to the compatible-with-headless-VM version" />
+    <MESSAGE value="eidted all commands that deal with scheduling timely messages to use 'America/Los_Angeles' timezone - testing needed" />
+    <option name="LAST_COMMIT_MESSAGE" value="eidted all commands that deal with scheduling timely messages to use 'America/Los_Angeles' timezone - testing needed" />
   </component>
 </project>
