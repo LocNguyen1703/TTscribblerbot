@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="reverted to the previous setup process that works with the current Oracle Cloud VM configs">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="reverted the authentication process back to the compatible-with-headless-VM version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -82,20 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00011" summary="updated .gitignore, and trying to fix the bot commands - right now the client events take over without rather than letting the bot commands function run so all i get is from the bot is &quot;i don't understand&quot;">
-      <created>1716711164758</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1716711164758</updated>
-    </task>
-    <task id="LOCAL-00012" summary="turns out i can only use either &quot;client&quot; instance or &quot;bot&quot; instance, not both since it may cause whatever conflicts. Removed &quot;client&quot; instance. Bot is now running properly but the &quot;/test&quot; command still isn't">
-      <created>1716712915239</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1716712915239</updated>
     </task>
     <task id="LOCAL-00013" summary="turns out the error comes from the google sheets API, and the error is simply because I added the wrong sheet name in the google sheet (it's supposed to be &quot;Worksheet1&quot;, not &quot;sheet1&quot;). Now there's an &quot;InteractionResponded&quot; error but I'm guessing that doesn't affect much">
       <created>1716715353926</created>
@@ -426,7 +412,21 @@
       <option name="project" value="LOCAL" />
       <updated>1724234487021</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="improved autocomplete functionalities to also generate some suggestions even with no inputs">
+      <created>1724314629701</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1724314629701</updated>
+    </task>
+    <task id="LOCAL-00061" summary="reverted the authentication process back to the compatible-with-headless-VM version">
+      <created>1724314736614</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1724314736614</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -441,8 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="just added code comments and basis for an add_event command" />
-    <MESSAGE value="edited response message in events_check command - much more understandable now, and added an add_event command - able to add 1 single event to Google Calendar" />
     <MESSAGE value="just added some code comments" />
     <MESSAGE value="added new ignores - added a private file into project folder" />
     <MESSAGE value="added new field in ignore" />
@@ -466,6 +464,8 @@
     <MESSAGE value="apparently note command now works without timing out - no need for interaction.response.defer()" />
     <MESSAGE value="edited print_bad_status to also work independently from &quot;note&quot; command (i.e. print_bad_status no longer needs help from any global dictionaries that contain scores and notes)" />
     <MESSAGE value="reverted to the previous setup process that works with the current Oracle Cloud VM configs" />
-    <option name="LAST_COMMIT_MESSAGE" value="reverted to the previous setup process that works with the current Oracle Cloud VM configs" />
+    <MESSAGE value="improved autocomplete functionalities to also generate some suggestions even with no inputs" />
+    <MESSAGE value="reverted the authentication process back to the compatible-with-headless-VM version" />
+    <option name="LAST_COMMIT_MESSAGE" value="reverted the authentication process back to the compatible-with-headless-VM version" />
   </component>
 </project>

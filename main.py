@@ -35,7 +35,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -64,11 +64,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-creds = credentials = service_account.Credentials.from_service_account_file(
-   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -390,7 +390,8 @@ async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str
     scheduler.add_job(print_message, CronTrigger(day=None if day.lower() == "none" else day,
                                                  hour=None if hour.lower() == "none" else hour,
                                                  minute=None if minute.lower() == "none" else minute,
-                                                 second=None if second.lower() == "none" else second),
+                                                 second=None if second.lower() == "none" else second,
+                                                 timezone=pytz.timezone('America/Los_Angeles')),
                       args=[message, file_path, channel])
     await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
                                             f'Message is only visible to you and will terminate in T-minus 60 seconds',
@@ -443,7 +444,8 @@ async def setTimelyDM(interaction: discord.Interaction, day: str, hour: str, min
     scheduler.add_job(print_dm, CronTrigger(day=None if day.lower() == "none" else day,
                                             hour=None if hour.lower() == "none" else hour,
                                             minute=None if minute.lower() == "none" else minute,
-                                            second=None if second.lower() == "none" else second),
+                                            second=None if second.lower() == "none" else second,
+                                            timezone=pytz.timezone('America/Los_Angeles')),
                       args=[message, file_path, interaction.guild, role_name])
 
     await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
@@ -524,7 +526,8 @@ async def timelyBadStandingDM(interaction: discord.Interaction, day: str, hour: 
     scheduler.add_job(print_bad_status, CronTrigger(day=None if day.lower() == "none" else day,
                                                     hour=None if hour.lower() == "none" else hour,
                                                     minute=None if minute.lower() == "none" else minute,
-                                                    second=None if second.lower() == "none" else second),
+                                                    second=None if second.lower() == "none" else second,
+                                                    timezone=pytz.timezone('America/Los_Angeles')),
                       args=[interaction.guild])
 
     await interaction.response.send_message(f'message scheduled. Message is only visible to you and will '
