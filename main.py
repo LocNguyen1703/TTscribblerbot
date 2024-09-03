@@ -41,7 +41,6 @@ print(TOKEN)
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 RANGE1 = os.getenv('TEST_READ_RANGE')
 RANGE2 = os.getenv('TEST_WRITE_RANGE')
-X_RANGE = os.getenv('X_CHECK_RANGE')
 
 # STEP 1: BOT SETUP
 intents: Intents = Intents.default()
@@ -159,6 +158,7 @@ async def noteCommand(interaction: discord.Interaction):
     columnIndex: int = 1
 
     # fetch values from event attendance - check to see if there are any "x"
+    X_RANGE = os.getenv('X_CHECK_RANGE')
     x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
     x_check = x_fetch.get('values', [])
 
@@ -169,6 +169,10 @@ async def noteCommand(interaction: discord.Interaction):
     SCORES_RANGE = os.getenv('SCORES_RANGE')
     scores_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=SCORES_RANGE).execute()
     scores = scores_fetch.get('values', [])
+
+    OTHER_HOURS_RANGE = os.getenv('OTHER_HOURS_RANGE')
+    other_hours_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=OTHER_HOURS_RANGE).execute()
+    other_hours = other_hours_fetch.get('values', [])
 
     # "reason" string to hold bad standing reasons to add to cells' notes
     reason: str = ""
@@ -187,7 +191,7 @@ async def noteCommand(interaction: discord.Interaction):
     # Fetch spreadsheet metadata - for retrieving sheet_id of the sheet we're operating in
     spreadsheet = sheet.get(spreadsheetId=SPREADSHEET_ID).execute()
 
-    # retrieve the correct sheet_id in the spreadsheet before making edit requests
+    # retrieve the correct sub-sheet's sheet_id in the spreadsheet before making edit requests
     if len(spreadsheet.get('sheets', [])) == 0:  # if somehow there's no sheet created in spreadsheet
         raise ValueError("no sheet created")
     sheet_id = spreadsheet.get('sheets', [])[0]['properties']['sheetId']  # assumes 1st sheet in spreadsheet is ALWAYS
@@ -197,12 +201,21 @@ async def noteCommand(interaction: discord.Interaction):
     # defer() function lets bot know command is still being processed & keeps it from timing out
     # await interaction.response.defer()
 
-    for k in range(len(x_check[1:])):
+    for k in range(len(other_hours)):
         for i in range(len(x_check[1:][k])):
             if x_check[1:][k][i] == "x":
                 reason += "-missed " + event_titles[i] + " (+1)\n"
             elif x_check[1:][k][i] == "t":
                 reason += "-late to " + event_titles[i] + " (+0.5)\n"
+        # checking for tabling, study, committee volunteering, tutoring hours
+        if int(other_hours[k][3]) > 0:  # tabling hours
+            reason += f'-missed tabling hours: {other_hours[k][3]} (+{int(other_hours[k][3])/4})\n'
+        if int(other_hours[k][2]) > 0:  # study hours
+            reason += f'-study hours attended: {other_hours[k][2]} (-{int(other_hours[k][2])/4})\n'
+        if int(other_hours[k][1]) > 0:  # committee volunteering hours
+            reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{other_hours[k][1]})\n'
+        if int(other_hours[k][0]) > 0:  # tutored hours
+            reason += f'-committee volunteering hours done: {other_hours[k][0]} (-{other_hours[k][0]})\n'
 
         # Create the request body to add the note to the specified cell
         requests.append({
@@ -265,6 +278,7 @@ async def badStandingCheck(interaction: discord.Interaction):
     then recreate all the notes for that user and send that
     '''
     # fetch values from event attendance - check to see if there are any "x"
+    X_RANGE = os.getenv('X_CHECK_RANGE')
     x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
     x_check = x_fetch.get('values', [])
 
@@ -275,6 +289,10 @@ async def badStandingCheck(interaction: discord.Interaction):
     SCORES_RANGE = os.getenv('SCORES_RANGE')
     scores_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=SCORES_RANGE).execute()
     scores = scores_fetch.get('values', [])
+
+    OTHER_HOURS_RANGE = os.getenv('OTHER_HOURS_RANGE')
+    other_hours_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=OTHER_HOURS_RANGE).execute()
+    other_hours = other_hours_fetch.get('values', [])
 
     reason: str = ""
 
@@ -287,13 +305,25 @@ async def badStandingCheck(interaction: discord.Interaction):
         await interaction.response.send_message("no event created - this message is only visible to you and will "
                                                 "terminate in T-minus 60 seconds", ephemeral=True, delete_after=60)
 
-    if len(x_check[row+1]) == 0: reason = "None added"
-    else:
+    if len(x_check[row+1]) != 0:
         for i in range(len(event_titles)):
             if x_check[row+1][i] == "x":  # row+1 takes into account mismatch caused by 1st row of event_titles
                 reason += "-missed " + event_titles[i] + " (+1)\n"
             elif x_check[row+1][i] == "t":
                 reason += "-late to " + event_titles[i] + " (+0.5)\n"
+
+    # checking for tabling, study, committee volunteering, tutoring hours
+    if int(other_hours[row][3]) > 0:  # tabling hours
+        reason += f'-missed tabling hours: {other_hours[row][3]} (+{int(other_hours[row][3])/4})\n'
+    if int(other_hours[row][2]) > 0:  # study hours
+        reason += f'-study hours attended: {other_hours[row][2]} (-{int(other_hours[row][2])/4})\n'
+    if int(other_hours[row][1]) > 0:  # committee volunteering hours
+        reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{other_hours[row][1]})\n'
+    if int(other_hours[row][0]) > 0:  # tutored hours
+        reason += f'-committee volunteering hours done: {other_hours[row][0]} (-{other_hours[row][0]})\n'
+
+    # if "reason" string is still empty after all that - no reason added
+    if not reason: reason = "None added"
 
     good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
 
@@ -473,6 +503,7 @@ async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message
 # helper function to send dm's about member's bad-standing status
 async def print_bad_status(guild: discord.Guild):
     # fetch values from event attendance - check to see if there are any "x"
+    X_RANGE = os.getenv('X_CHECK_RANGE')
     x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
     x_check = x_fetch.get('values', [])
 

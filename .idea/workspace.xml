@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="eidted all commands that deal with scheduling timely messages to use 'America/Los_Angeles' timezone - testing needed" />
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="reverted setup process back to the compatible-with-headless-VM version">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -79,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00014" summary="added simple explanation comments">
-      <created>1716808679903</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1716808679903</updated>
     </task>
     <task id="LOCAL-00015" summary="fixed the test function - turns out an interaction instance can only respond to a command ONCE. I have multiple values in my read range, which makes the bot respond multiple times, which causes an error. Solution is to append all values into an array then use join() function, or append all values into a string">
       <created>1716861844510</created>
@@ -423,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1724462545177</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="reverted setup process back to the compatible-with-headless-VM version">
+      <created>1724462936822</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1724462936823</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -438,7 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added new ignores - added a private file into project folder" />
     <MESSAGE value="added new field in ignore" />
     <MESSAGE value="added new field in ignore (requirements.txt)" />
     <MESSAGE value="adjusting the authentication process to be compatible with a Virtual Machine that can't access Google browsers (every time credentials is refreshed or whatnot, usually a browser is opened and you follow the steps; in this case, the process will print a URL to the console in the VM, and you copy-paste that URL in Google to continue the authentication process and paste the resulting authorization code back to console" />
@@ -463,6 +465,7 @@
     <MESSAGE value="improved autocomplete functionalities to also generate some suggestions even with no inputs" />
     <MESSAGE value="reverted the authentication process back to the compatible-with-headless-VM version" />
     <MESSAGE value="eidted all commands that deal with scheduling timely messages to use 'America/Los_Angeles' timezone - testing needed" />
-    <option name="LAST_COMMIT_MESSAGE" value="eidted all commands that deal with scheduling timely messages to use 'America/Los_Angeles' timezone - testing needed" />
+    <MESSAGE value="reverted setup process back to the compatible-with-headless-VM version" />
+    <option name="LAST_COMMIT_MESSAGE" value="reverted setup process back to the compatible-with-headless-VM version" />
   </component>
 </project>
