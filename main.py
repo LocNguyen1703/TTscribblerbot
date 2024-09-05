@@ -2,7 +2,6 @@
 # https://www.youtube.com/watch?v=UYJDKSah-Ww
 
 import os
-import typing
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -22,7 +21,6 @@ from responses import get_response
 from datetime import datetime, timedelta, time, timezone
 import pytz
 
-import pickle
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -349,7 +347,7 @@ async def badStandingCheck(interaction: discord.Interaction):
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
 # helper function to print message
 async def print_message(message: str, file_path: str, input_channel: discord.TextChannel):
-    edited = "\n\n".join(message.split("[br]"))  # "[br]" my own syntax for line breaks ("\n\n") - change if needed
+    edited = "\n".join(message.split("[br]"))  # "[br]" my own syntax for line breaks ("\n\n") - change if needed
 
     if input_channel:
         if file_path.lower() != "none":
@@ -363,7 +361,7 @@ async def print_message(message: str, file_path: str, input_channel: discord.Tex
 async def print_dm(message: str, file_path: str, guild: discord.Guild, role_name: str):
     role = discord.utils.get(guild.roles, name=role_name)  # get role object from input role name
     print(role)  # for debugging
-    edited = "\n\n".join(message.split("[br]"))
+    edited = "\n".join(message.split("[br]"))
     # filter and put all members with same role object into a list
     members_with_roles = [member for member in guild.members if role in member.roles and not member.bot]
 
