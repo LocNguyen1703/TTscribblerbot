@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="improved &quot;note&quot; &amp; &quot;badStandingCheck&quot; commands to also take into account study hours, volunteering hours, tabling hours &amp; tutoring hours">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited the &quot;print_dm&quot; and &quot;print_message&quot; helper functions - now users can specify whatever amount of line breaks they want with the [br] instead of it being 2 line breaks by default; cleaned imports">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -48,7 +48,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../STUDY (class files, homework, projects, etc.)/summer CTI program/GitHub practicing/first-contributions-main" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../STUDY (class files, homework, projects, etc.)/study (fall 2024)/COMP155/urban_dynamics.py" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RunManager">
@@ -82,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00016" summary="successfully added a &quot;add_note&quot; bot command - had trouble with syncing the new bot command to the bot and resolved it by reinviting the bot to the server. not sure if this is a 100% solution tho">
-      <created>1716865653977</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1716865653977</updated>
     </task>
     <task id="LOCAL-00017" summary="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later">
       <created>1717066473889</created>
@@ -426,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1725400251313</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="edited the &quot;print_dm&quot; and &quot;print_message&quot; helper functions - now users can specify whatever amount of line breaks they want with the [br] instead of it being 2 line breaks by default; cleaned imports">
+      <created>1725525848132</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1725525848133</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -441,7 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added new field in ignore (requirements.txt)" />
     <MESSAGE value="adjusting the authentication process to be compatible with a Virtual Machine that can't access Google browsers (every time credentials is refreshed or whatnot, usually a browser is opened and you follow the steps; in this case, the process will print a URL to the console in the VM, and you copy-paste that URL in Google to continue the authentication process and paste the resulting authorization code back to console" />
     <MESSAGE value="reverted the authentication process back to before (interacting with web browser) - there's no &quot;run_console()&quot; method in oogle_auth_oauthlib.flow" />
     <MESSAGE value="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM" />
@@ -466,6 +465,7 @@
     <MESSAGE value="eidted all commands that deal with scheduling timely messages to use 'America/Los_Angeles' timezone - testing needed" />
     <MESSAGE value="reverted setup process back to the compatible-with-headless-VM version" />
     <MESSAGE value="improved &quot;note&quot; &amp; &quot;badStandingCheck&quot; commands to also take into account study hours, volunteering hours, tabling hours &amp; tutoring hours" />
-    <option name="LAST_COMMIT_MESSAGE" value="improved &quot;note&quot; &amp; &quot;badStandingCheck&quot; commands to also take into account study hours, volunteering hours, tabling hours &amp; tutoring hours" />
+    <MESSAGE value="edited the &quot;print_dm&quot; and &quot;print_message&quot; helper functions - now users can specify whatever amount of line breaks they want with the [br] instead of it being 2 line breaks by default; cleaned imports" />
+    <option name="LAST_COMMIT_MESSAGE" value="edited the &quot;print_dm&quot; and &quot;print_message&quot; helper functions - now users can specify whatever amount of line breaks they want with the [br] instead of it being 2 line breaks by default; cleaned imports" />
   </component>
 </project>

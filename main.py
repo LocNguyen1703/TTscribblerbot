@@ -33,7 +33,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -61,11 +61,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-creds = credentials = service_account.Credentials.from_service_account_file(
-   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -261,7 +261,8 @@ async def noteCommand(interaction: discord.Interaction):
 # STEP 4*: SPECIFIC BOT COMMAND TO RETURN BAD STANDING STATUS TO USER
 @bot.tree.command(name='bad_standing_check')
 async def badStandingCheck(interaction: discord.Interaction):
-    username: str = interaction.user.display_name
+    # process display name - remove all Officer position indicators
+    name: str = " ".join([elem for elem in interaction.user.display_name.split() if "!" not in elem and elem.isalnum()])
     '''
     thought: instead of having a middle-man (creating notes THEN fetch notes back THEN reply to user message)
     --> why not create note directly then send (i.e. instead of creating notes for all members create notes for the 
@@ -295,7 +296,7 @@ async def badStandingCheck(interaction: discord.Interaction):
     reason: str = ""
 
     # get the row index of the user's name in the sheet
-    row = names.index([username])  # taking into account first row of event_titles
+    row = names.index([name])  # taking into account first row of event_titles
 
     try:
         event_titles = x_check[0]
@@ -325,7 +326,7 @@ async def badStandingCheck(interaction: discord.Interaction):
 
     good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
 
-    response: str = f"hey {username}! you currently have {scores[row][0]} points, which means " \
+    response: str = f"hey {name}! you currently have {scores[row][0]} points, which means " \
                     f"you're{good_standing_check} in bad standing!\nreasons: {reason}\nif you have any questions" \
                     f" please go annoy brother Scribe, I am but a vessel of their intelligence.\nThis message" \
                     f" will terminate in T-minus 90 seconds - you can use /bad_standing_check command to check" \
