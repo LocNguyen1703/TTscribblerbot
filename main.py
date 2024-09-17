@@ -33,7 +33,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -61,11 +61,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-# creds = credentials = service_account.Credentials.from_service_account_file(
-#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+creds = credentials = service_account.Credentials.from_service_account_file(
+   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-creds = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+# creds = service_account.Credentials.from_service_account_file(
+#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -249,10 +249,10 @@ async def noteCommand(interaction: discord.Interaction):
         sheet.batchUpdate(spreadsheetId=SPREADSHEET_ID, body=body).execute()
     except Exception as e:
         print(f"An error occurred: {e}")
-        await interaction.response.send_message(f"An error occurred: {e}", ephemeral=True)
+        await interaction.response.send_message(f"An error occurred: {e}", ephemeral=True, delete_after=90)
 
     # confirm message that notes have been added
-    await interaction.response.send_message(f"Notes added to cells successfully.", ephemeral=True)
+    await interaction.response.send_message(f"Notes added to cells successfully.", ephemeral=True, delete_after=60)
 
     # print(notes_dict)  # for debugging
     # print(scores_dict)  # for debugging

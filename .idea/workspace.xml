@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="edited the &quot;print_dm&quot; and &quot;print_message&quot; helper functions - now users can specify whatever amount of line breaks they want with the [br] instead of it being 2 line breaks by default; cleaned imports">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="fixed the name mismatch error with bad_standing_check command">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -82,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00017" summary="successfully added a &quot;note&quot; bot command - command goes through &amp; auto-fills notes inside cells to send out later">
-      <created>1717066473889</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1717066473889</updated>
     </task>
     <task id="LOCAL-00018" summary="just cleaned up code for note command a bit (not really that much cleaner)">
       <created>1717569864405</created>
@@ -426,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1725525848133</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="fixed the name mismatch error with bad_standing_check command">
+      <created>1726501950846</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1726501950846</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -441,7 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="adjusting the authentication process to be compatible with a Virtual Machine that can't access Google browsers (every time credentials is refreshed or whatnot, usually a browser is opened and you follow the steps; in this case, the process will print a URL to the console in the VM, and you copy-paste that URL in Google to continue the authentication process and paste the resulting authorization code back to console" />
     <MESSAGE value="reverted the authentication process back to before (interacting with web browser) - there's no &quot;run_console()&quot; method in oogle_auth_oauthlib.flow" />
     <MESSAGE value="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM" />
     <MESSAGE value="might have finally found a workaround &quot;.run_console()&quot; function - by using a service account, Google automates the authentication process and we don't have to do it manually with the web-browser interactions" />
@@ -466,6 +465,7 @@
     <MESSAGE value="reverted setup process back to the compatible-with-headless-VM version" />
     <MESSAGE value="improved &quot;note&quot; &amp; &quot;badStandingCheck&quot; commands to also take into account study hours, volunteering hours, tabling hours &amp; tutoring hours" />
     <MESSAGE value="edited the &quot;print_dm&quot; and &quot;print_message&quot; helper functions - now users can specify whatever amount of line breaks they want with the [br] instead of it being 2 line breaks by default; cleaned imports" />
-    <option name="LAST_COMMIT_MESSAGE" value="edited the &quot;print_dm&quot; and &quot;print_message&quot; helper functions - now users can specify whatever amount of line breaks they want with the [br] instead of it being 2 line breaks by default; cleaned imports" />
+    <MESSAGE value="fixed the name mismatch error with bad_standing_check command" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed the name mismatch error with bad_standing_check command" />
   </component>
 </project>
