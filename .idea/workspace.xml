@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="fixed the name mismatch error with bad_standing_check command">
+    <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="cleaned some code and reverted back to auto-authentication process">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -48,7 +48,8 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../STUDY (class files, homework, projects, etc.)/study (fall 2024)/COMP155/urban_dynamics.py" />
+    <property name="codeWithMe.voiceChat.enabledByDefault" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../STUDY (class files, homework, projects, etc.)/study (fall 2023)/COMP157/COMP157 labs &amp; projects/labs/lab5/lab5 - code" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RunManager">
@@ -82,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716169730251</updated>
-    </task>
-    <task id="LOCAL-00018" summary="just cleaned up code for note command a bit (not really that much cleaner)">
-      <created>1717569864405</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1717569864405</updated>
     </task>
     <task id="LOCAL-00019" summary="cleaned up code in note command - batchUpdate() optimized (called only once to update everything)">
       <created>1717928776177</created>
@@ -426,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1726501950846</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="cleaned some code and reverted back to auto-authentication process">
+      <created>1726588183995</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1726588183996</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -441,7 +442,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="reverted the authentication process back to before (interacting with web browser) - there's no &quot;run_console()&quot; method in oogle_auth_oauthlib.flow" />
     <MESSAGE value="added functionality to refresh token.pickle and Google API instances every 24 hours. need to test if it works and also find a way around interacting with web browsers on a headless VM" />
     <MESSAGE value="might have finally found a workaround &quot;.run_console()&quot; function - by using a service account, Google automates the authentication process and we don't have to do it manually with the web-browser interactions" />
     <MESSAGE value="added code comments" />
@@ -466,6 +466,7 @@
     <MESSAGE value="improved &quot;note&quot; &amp; &quot;badStandingCheck&quot; commands to also take into account study hours, volunteering hours, tabling hours &amp; tutoring hours" />
     <MESSAGE value="edited the &quot;print_dm&quot; and &quot;print_message&quot; helper functions - now users can specify whatever amount of line breaks they want with the [br] instead of it being 2 line breaks by default; cleaned imports" />
     <MESSAGE value="fixed the name mismatch error with bad_standing_check command" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed the name mismatch error with bad_standing_check command" />
+    <MESSAGE value="cleaned some code and reverted back to auto-authentication process" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleaned some code and reverted back to auto-authentication process" />
   </component>
 </project>

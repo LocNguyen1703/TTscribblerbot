@@ -27,13 +27,15 @@ from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from googleapiclient.errors import HttpError  # for specific error handling in the future
 
+import sqlite3
+
 # STEP 0: LOAD DISCORD BOT TOKEN FROM SOMEWHERE SAFE
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -61,11 +63,11 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-creds = credentials = service_account.Credentials.from_service_account_file(
-   os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -149,6 +151,75 @@ async def testCommand(interaction: discord.Interaction):
         await interaction.response.send_message("\n".join(i for i in response_message))
 
 
+# STEP 4*: SPECIFIC BOT COMMAND TO ADD DATA INTO SQLITE TABLE
+@bot.tree.command(name='prepare_table')
+async def prepareSQLTable(interaction: discord.Interaction):
+    connection = sqlite3.connect('/mnt/mydatavolume/sqlite_data/mydatabase.db')
+    cursor = connection.cursor()
+
+    # final command to execute using cursor.execute()
+    command = "INSERT INTO users (username, bad_standing_points, reasons) VALUES "
+
+    # fetch values from event attendance - check to see if there are any "x"
+    X_RANGE = os.getenv('X_CHECK_RANGE')
+    x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
+    x_check = x_fetch.get('values', [])
+
+    NAME_RANGE = os.getenv('NAME_RANGE')
+    names_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=NAME_RANGE).execute()
+    names = names_fetch.get('values', [])
+
+    SCORES_RANGE = os.getenv('SCORES_RANGE')
+    scores_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=SCORES_RANGE).execute()
+    scores = scores_fetch.get('values', [])
+
+    OTHER_HOURS_RANGE = os.getenv('OTHER_HOURS_RANGE')
+    other_hours_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=OTHER_HOURS_RANGE).execute()
+    other_hours = other_hours_fetch.get('values', [])
+
+    reason: str = ""
+
+    try:
+        event_titles = x_check[0]
+    except IndexError:
+        await interaction.response.send_message("no event created - this message is only visible to you and will "
+                                                "terminate in T-minus 60 seconds", ephemeral=True, delete_after=60)
+
+    # fetch bad_standing_points, reasons and names of each Brother
+    for k in range(len(other_hours)):
+        for i in range(len(x_check[1:][k])):
+            if x_check[1:][k][i] == "x":
+                reason += "-missed " + event_titles[i] + " (+1)\n"
+            elif x_check[1:][k][i] == "t":
+                reason += "-late to " + event_titles[i] + " (+0.5)\n"
+        # checking for tabling, study, committee volunteering, tutoring hours
+        if int(other_hours[k][3]) > 0:  # tabling hours
+            reason += f'-missed tabling hours: {other_hours[k][3]} (+{int(other_hours[k][3])/4})\n'
+        if int(other_hours[k][2]) > 0:  # study hours
+            reason += f'-study hours attended: {other_hours[k][2]} (-{int(other_hours[k][2])/4})\n'
+        if int(other_hours[k][1]) > 0:  # committee volunteering hours
+            reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{other_hours[k][1]})\n'
+        if int(other_hours[k][0]) > 0:  # tutored hours
+            reason += f'-committee volunteering hours done: {other_hours[k][0]} (-{other_hours[k][0]})\n'
+
+        if not reason: reason = "None added"
+
+        try:
+            cursor.execute(f'INSERT INTO users (username, bad_standing_points, reasons) '
+                           f'VALUES ({names[k][0]}, {scores[k][0]}, {reason}) '
+                           f'ON CONFLICT(username) DO UPDATE SET'
+                           f'   bad_standing_points = excluded.bad_standing_points,'
+                           f'   reasons = excluded.reasons;')
+            reason = ""
+        except Exception as e:
+            await interaction.response.send_message(f"An error occurred: {e}", ephemeral=True, delete_after=90)
+
+    cursor.execute("SELECT * FROM users")
+    connection.close()
+    await interaction.response.send_message("table updated successfully")
+    # return NotImplementedError("no code here yet...")
+
+
 # STEP 4*: SPECIFIC BOT COMMAND TO ADD NOTES TO CELLS
 @bot.tree.command(name='note')
 async def noteCommand(interaction: discord.Interaction):
@@ -175,7 +246,8 @@ async def noteCommand(interaction: discord.Interaction):
     # "reason" string to hold bad standing reasons to add to cells' notes
     reason: str = ""
 
-    # list of requests to hold all cell update requests
+    # list of requests to hold all cell
+    # update requests
     requests = []
 
     # add reason for every "x" found
@@ -199,21 +271,32 @@ async def noteCommand(interaction: discord.Interaction):
     # defer() function lets bot know command is still being processed & keeps it from timing out
     # await interaction.response.defer()
 
+    """
+    the "other-hours" 2d array will always have the same number of rows as there are Brothers
+    However, the x_check[1:] 2d table may not have as many rows (e.g. if a certain Brother doesn't 
+    miss and is not late to any event. Therefore applying indices for other_hours to x_check will cause
+    out_of_index error
+    
+    fixed with the if line at line 283
+    """
     for k in range(len(other_hours)):
-        for i in range(len(x_check[1:][k])):
-            if x_check[1:][k][i] == "x":
-                reason += "-missed " + event_titles[i] + " (+1)\n"
-            elif x_check[1:][k][i] == "t":
-                reason += "-late to " + event_titles[i] + " (+0.5)\n"
+        if k < len(x_check[1:]):
+            for i in range(len(x_check[1:][k])):
+                if x_check[1:][k][i] == "x":
+                    reason += "-missed " + event_titles[i] + " (+1)\n"
+                elif x_check[1:][k][i] == "t":
+                    reason += "-late to " + event_titles[i] + " (+0.5)\n"
         # checking for tabling, study, committee volunteering, tutoring hours
-        if int(other_hours[k][3]) > 0:  # tabling hours
+        if float(other_hours[k][4]) > 0:  # tabling hours
+            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{int(other_hours[k][3])})\n'
+        if float(other_hours[k][3]) > 0:  # tabling hours
             reason += f'-missed tabling hours: {other_hours[k][3]} (+{int(other_hours[k][3])/4})\n'
-        if int(other_hours[k][2]) > 0:  # study hours
+        if float(other_hours[k][2]) > 0:  # study hours
             reason += f'-study hours attended: {other_hours[k][2]} (-{int(other_hours[k][2])/4})\n'
-        if int(other_hours[k][1]) > 0:  # committee volunteering hours
+        if float(other_hours[k][1]) > 0:  # committee volunteering hours
             reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{other_hours[k][1]})\n'
-        if int(other_hours[k][0]) > 0:  # tutored hours
-            reason += f'-committee volunteering hours done: {other_hours[k][0]} (-{other_hours[k][0]})\n'
+        if float(other_hours[k][0]) > 0:  # tutored hours
+            reason += f'-tutoring hours done: {other_hours[k][0]} (-{other_hours[k][0]})\n'
 
         # Create the request body to add the note to the specified cell
         requests.append({
@@ -312,13 +395,13 @@ async def badStandingCheck(interaction: discord.Interaction):
                 reason += "-late to " + event_titles[i] + " (+0.5)\n"
 
     # checking for tabling, study, committee volunteering, tutoring hours
-    if int(other_hours[row][3]) > 0:  # tabling hours
+    if float(other_hours[row][3]) > 0:  # tabling hours
         reason += f'-missed tabling hours: {other_hours[row][3]} (+{int(other_hours[row][3])/4})\n'
-    if int(other_hours[row][2]) > 0:  # study hours
+    if float(other_hours[row][2]) > 0:  # study hours
         reason += f'-study hours attended: {other_hours[row][2]} (-{int(other_hours[row][2])/4})\n'
-    if int(other_hours[row][1]) > 0:  # committee volunteering hours
+    if float(other_hours[row][1]) > 0:  # committee volunteering hours
         reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{other_hours[row][1]})\n'
-    if int(other_hours[row][0]) > 0:  # tutored hours
+    if float(other_hours[row][0]) > 0:  # tutored hours
         reason += f'-committee volunteering hours done: {other_hours[row][0]} (-{other_hours[row][0]})\n'
 
     # if "reason" string is still empty after all that - no reason added
