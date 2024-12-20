@@ -20,6 +20,7 @@ token.pickle
 
 #Oracle Cloud private key
 ssh-key-2024-07-25.key
+ssh-key-dsicordbothost1.key
 .key
 
 # requirements file (includes all required libraries to install)
