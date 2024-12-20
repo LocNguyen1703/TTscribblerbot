@@ -288,7 +288,7 @@ async def noteCommand(interaction: discord.Interaction):
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
         # checking for tabling, study, committee volunteering, tutoring hours
         if float(other_hours[k][4]) > 0:  # tabling hours
-            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{int(other_hours[k][3])})\n'
+            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{int(other_hours[k][4])})\n'
         if float(other_hours[k][3]) > 0:  # tabling hours
             reason += f'-missed tabling hours: {other_hours[k][3]} (+{int(other_hours[k][3])/4})\n'
         if float(other_hours[k][2]) > 0:  # study hours
@@ -388,13 +388,15 @@ async def badStandingCheck(interaction: discord.Interaction):
                                                 "terminate in T-minus 60 seconds", ephemeral=True, delete_after=60)
 
     if len(x_check[row+1]) != 0:
-        for i in range(len(event_titles)):
+        for i in range(len(x_check[row+1])):
             if x_check[row+1][i] == "x":  # row+1 takes into account mismatch caused by 1st row of event_titles
                 reason += "-missed " + event_titles[i] + " (+1)\n"
             elif x_check[row+1][i] == "t":
                 reason += "-late to " + event_titles[i] + " (+0.5)\n"
 
     # checking for tabling, study, committee volunteering, tutoring hours
+    if float(other_hours[row][4]) > 0:  # tabling hours
+        reason += f'-Extra tabling hours: {other_hours[row][4]} (-{int(other_hours[row][4])})\n'
     if float(other_hours[row][3]) > 0:  # tabling hours
         reason += f'-missed tabling hours: {other_hours[row][3]} (+{int(other_hours[row][3])/4})\n'
     if float(other_hours[row][2]) > 0:  # study hours
@@ -402,7 +404,7 @@ async def badStandingCheck(interaction: discord.Interaction):
     if float(other_hours[row][1]) > 0:  # committee volunteering hours
         reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{other_hours[row][1]})\n'
     if float(other_hours[row][0]) > 0:  # tutored hours
-        reason += f'-committee volunteering hours done: {other_hours[row][0]} (-{other_hours[row][0]})\n'
+        reason += f'-tutoring hours done: {other_hours[row][0]} (-{other_hours[row][0]})\n'
 
     # if "reason" string is still empty after all that - no reason added
     if not reason: reason = "None added"
