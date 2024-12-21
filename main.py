@@ -412,7 +412,7 @@ async def badStandingCheck(interaction: discord.Interaction):
     good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
 
     response: str = f"hey {name}! you currently have {scores[row][0]} points, which means " \
-                    f"you're{good_standing_check} in bad standing!\nreasons: {reason}\nif you have any questions" \
+                    f"you're{good_standing_check} in bad standing!\nreasons: \n\n{reason}\nif you have any questions" \
                     f" please go annoy brother Scribe, I am but a vessel of their intelligence.\nThis message" \
                     f" will terminate in T-minus 90 seconds - you can use /bad_standing_check command to check" \
                     f" your bad-standing status anytime"
@@ -640,7 +640,7 @@ async def print_bad_status(guild: discord.Guild):
 
         response: str = f"hey {username}, here is your weekly bad-standing status update! you currently have " \
                         f"{scores[row][0]} points, which means you're{good_standing_check} in bad standing!\n" \
-                        f"reasons: {reason}\nif you have any questions please go annoy brother Scribe, " \
+                        f"reasons: \n\n{reason}\nif you have any questions please go annoy brother Scribe, " \
                         f"I am but a vessel of their intelligence.\n" \
                         f"you can use command /bad_standing_check to check you status any time!"
         reason = ""  # reset reason for next iteration
