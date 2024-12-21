@@ -608,18 +608,14 @@ async def print_bad_status(guild: discord.Guild):
     members_lst = {}
     for member in guild.members:
         name: str = " ".join([elem for elem in member.display_name.split() if "!" not in elem and elem.isalnum()])
-        if name in names: members_lst.update({member: name})
-
-    print(members_lst)
+        if [name] in names: members_lst[member] = name
 
     reason: str = ""
     event_titles = x_check[0]
 
     for member in members_lst:
-        username: members_lst[member]
+        username = members_lst[member]
         row = names.index([username])
-        print("name before stripping characters: ", member.display_name)
-        print("name after stripping characters: ", username)
 
         if not x_check[row+1]: reason = "None added"
         else:

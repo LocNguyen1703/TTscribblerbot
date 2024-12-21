@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6e38869-4240-496a-8caf-7682cfa25dc1" name="Changes" comment="cleaned some code and reverted back to auto-authentication process">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -467,5 +468,12 @@
     <MESSAGE value="fixed the name mismatch error with bad_standing_check command" />
     <MESSAGE value="cleaned some code and reverted back to auto-authentication process" />
     <option name="LAST_COMMIT_MESSAGE" value="cleaned some code and reverted back to auto-authentication process" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="names = names_fetch.get('values', [])" language="Python" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
