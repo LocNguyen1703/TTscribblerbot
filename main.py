@@ -599,23 +599,46 @@ async def print_bad_status(guild: discord.Guild):
     scores_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=SCORES_RANGE).execute()
     scores = scores_fetch.get('values', [])
 
+    OTHER_HOURS_RANGE = os.getenv('OTHER_HOURS_RANGE')
+    other_hours_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=OTHER_HOURS_RANGE).execute()
+    other_hours = other_hours_fetch.get('values', [])
+
     # filter and put all members with same role object into a list
-    members_lst = [member for member in guild.members if [member.display_name] in names]
+    # members_lst = [member for member in guild.members if [member.display_name] in names]
+    members_lst = {}
+    for member in guild.members:
+        name: str = " ".join([elem for elem in member.display_name.split() if "!" not in elem and elem.isalnum()])
+        if name in names: members_lst.update({member: name})
+
+    print(members_lst)
 
     reason: str = ""
     event_titles = x_check[0]
 
     for member in members_lst:
-        username: str = member.display_name
+        username: members_lst[member]
         row = names.index([username])
+        print("name before stripping characters: ", member.display_name)
+        print("name after stripping characters: ", username)
 
         if not x_check[row+1]: reason = "None added"
         else:
-            for i in range(len(event_titles)):
+            for i in range(len(x_check[row+1])):
                 if x_check[row+1][i] == "x":  # row+1 takes into account mismatch caused by 1st row of event_titles
                     reason += "-missed " + event_titles[i] + " (+1)\n"
                 elif x_check[row+1][i] == "t":
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
+            # checking for tabling, study, committee volunteering, tutoring hours
+            if float(other_hours[row][4]) > 0:  # tabling hours
+                reason += f'-Extra tabling hours: {other_hours[row][4]} (-{int(other_hours[row][4])})\n'
+            if float(other_hours[row][3]) > 0:  # tabling hours
+                reason += f'-missed tabling hours: {other_hours[row][3]} (+{int(other_hours[row][3]) / 4})\n'
+            if float(other_hours[row][2]) > 0:  # study hours
+                reason += f'-study hours attended: {other_hours[row][2]} (-{int(other_hours[row][2]) / 4})\n'
+            if float(other_hours[row][1]) > 0:  # committee volunteering hours
+                reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{other_hours[row][1]})\n'
+            if float(other_hours[row][0]) > 0:  # tutored hours
+                reason += f'-tutoring hours done: {other_hours[row][0]} (-{other_hours[row][0]})\n'
 
         good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
 
