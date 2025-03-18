@@ -941,6 +941,12 @@ async def insertWholeDayEvent(interaction: discord.Interaction, title: str, loca
     # return NotImplementedError("no code here yet...")
 
 
+# STEP 4*: SPECIFIC BOT COMMAND TO RELOAD PARAMETERS - intended for Scribe transfers
+@bot.tree.command(name="reset_params")
+async def ParamReset(interaction: discord.Interaction):
+    return NotImplementedError("no code implemented here yet...")
+
+
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:
     bot.run(token=TOKEN)
