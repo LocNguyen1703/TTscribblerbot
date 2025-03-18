@@ -55,7 +55,6 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 scheduler = AsyncIOScheduler()
 # scheduler = BackgroundScheduler()
 
-# If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
           'https://www.googleapis.com/auth/calendar']
 
@@ -941,10 +940,37 @@ async def insertWholeDayEvent(interaction: discord.Interaction, title: str, loca
     # return NotImplementedError("no code here yet...")
 
 
-# STEP 4*: SPECIFIC BOT COMMAND TO RELOAD PARAMETERS - intended for Scribe transfers
+# STEP 4*: SPECIFIC BOT COMMAND TO RELOAD/REINITIALIZE PARAMETERS - intended for Scribe transfers
 @bot.tree.command(name="reset_params")
 async def ParamReset(interaction: discord.Interaction):
-    return NotImplementedError("no code implemented here yet...")
+    # re-initializes everything to the globals
+    global creds
+    global service_calendars
+    global service_sheets
+    global sheet
+    global SPREADSHEET_ID
+    global RANGE1
+    global RANGE2
+
+    creds = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+    # instance for Google Calendar - called "service_calendars"
+    # this service instance is from a class with multiple subclasses (my way of describing it)
+    # including an Events subclass - call service_calendars.events() to access
+    # we don't need to create any sub-instances like we do with Google sheets
+
+    service_calendars = build('calendar', 'v3', credentials=creds)
+    service_sheets = build('sheets', 'v4', credentials=creds)
+    # instance for Google sheets - called "sheet"
+    sheet = service_sheets.spreadsheets()
+
+    # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
+    SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
+    RANGE1 = os.getenv('TEST_READ_RANGE')
+    RANGE2 = os.getenv('TEST_WRITE_RANGE')
+
+    # return NotImplementedError("no code implemented here yet...")
 
 
 # STEP 5: MAIN ENTRY POINT
