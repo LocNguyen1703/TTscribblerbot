@@ -242,6 +242,12 @@ async def noteCommand(interaction: discord.Interaction):
     other_hours_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=OTHER_HOURS_RANGE).execute()
     other_hours = other_hours_fetch.get('values', [])
 
+    tabling_rule = os.getenv('TABLING_HOURS')
+    tabling_missed_rule = os.getenv('TABLING_MISSED')
+    study_hours_rules = os.getenv('STUDY_HOURS')
+    committee_volunteer_rules = os.getenv('COMMITTEE_HOURS')
+    tutoring_rules = os.getenv('TUTORED_HOURS')
+
     # "reason" string to hold bad standing reasons to add to cells' notes
     reason: str = ""
 
@@ -286,16 +292,16 @@ async def noteCommand(interaction: discord.Interaction):
                 elif x_check[1:][k][i] == "t":
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
         # checking for tabling, study, committee volunteering, tutoring hours
-        if float(other_hours[k][4]) > 0:  # tabling hours
-            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{int(other_hours[k][4])})\n'
-        if float(other_hours[k][3]) > 0:  # tabling hours
-            reason += f'-missed tabling hours: {other_hours[k][3]} (+{int(other_hours[k][3])/4})\n'
-        if float(other_hours[k][2]) > 0:  # study hours
-            reason += f'-study hours attended: {other_hours[k][2]} (-{int(other_hours[k][2])/4})\n'
-        if float(other_hours[k][1]) > 0:  # committee volunteering hours
-            reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{other_hours[k][1]})\n'
-        if float(other_hours[k][0]) > 0:  # tutored hours
-            reason += f'-tutoring hours done: {other_hours[k][0]} (-{other_hours[k][0]})\n'
+        if other_hours[k][4] != "" and float(other_hours[k][4]) > 0:  # tabling hours
+            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{int(other_hours[k][4])*tabling_rule})\n'
+        if other_hours[k][3] != "" and float(other_hours[k][3]) > 0:  # tabling hours MISSED
+            reason += f'-missed tabling hours: {other_hours[k][3]} (+{int(other_hours[k][3])*tabling_missed_rule})\n'
+        if other_hours[k][2] != "" and float(other_hours[k][2]) > 0:  # study hours
+            reason += f'-study hours attended: {other_hours[k][2]} (-{int(other_hours[k][2])*study_hours_rules})\n'
+        if other_hours[k][1] != "" and float(other_hours[k][1]) > 0:  # committee volunteering hours
+            reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{int(other_hours[k][1])*committee_volunteer_rules})\n'
+        if other_hours[k][0] != "" and float(other_hours[k][0]) > 0:  # tutored hours
+            reason += f'-tutoring hours done: {other_hours[k][0]} (-{int(other_hours[k][0])*tutoring_rules})\n'
 
         # Create the request body to add the note to the specified cell
         requests.append({
@@ -375,6 +381,12 @@ async def badStandingCheck(interaction: discord.Interaction):
     other_hours_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=OTHER_HOURS_RANGE).execute()
     other_hours = other_hours_fetch.get('values', [])
 
+    tabling_rule = os.getenv('TABLING_HOURS')
+    tabling_missed_rule = os.getenv('TABLING_MISSED')
+    study_hours_rules = os.getenv('STUDY_HOURS')
+    committee_volunteer_rules = os.getenv('COMMITTEE_HOURS')
+    tutoring_rules = os.getenv('TUTORED_HOURS')
+
     reason: str = ""
 
     # get the row index of the user's name in the sheet
@@ -394,16 +406,16 @@ async def badStandingCheck(interaction: discord.Interaction):
                 reason += "-late to " + event_titles[i] + " (+0.5)\n"
 
     # checking for tabling, study, committee volunteering, tutoring hours
-    if float(other_hours[row][4]) > 0:  # tabling hours
-        reason += f'-Extra tabling hours: {other_hours[row][4]} (-{int(other_hours[row][4])})\n'
-    if float(other_hours[row][3]) > 0:  # tabling hours
-        reason += f'-missed tabling hours: {other_hours[row][3]} (+{int(other_hours[row][3])/4})\n'
-    if float(other_hours[row][2]) > 0:  # study hours
-        reason += f'-study hours attended: {other_hours[row][2]} (-{int(other_hours[row][2])/4})\n'
-    if float(other_hours[row][1]) > 0:  # committee volunteering hours
-        reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{other_hours[row][1]})\n'
-    if float(other_hours[row][0]) > 0:  # tutored hours
-        reason += f'-tutoring hours done: {other_hours[row][0]} (-{other_hours[row][0]})\n'
+    if other_hours[row][4] != "" and float(other_hours[row][4]) > 0:  # tabling hours
+        reason += f'-Extra tabling hours: {other_hours[row][4]} (-{int(other_hours[row][4]*tabling_rule)})\n'
+    if other_hours[row][3] != "" and float(other_hours[row][3]) > 0:  # tabling hours MISSED
+        reason += f'-missed tabling hours: {other_hours[row][3]} (+{int(other_hours[row][3])*tabling_missed_rule})\n'
+    if other_hours[row][2] != "" and float(other_hours[row][2]) > 0:  # study hours
+        reason += f'-study hours attended: {other_hours[row][2]} (-{int(other_hours[row][2])*study_hours_rules})\n'
+    if other_hours[row][1] != "" and float(other_hours[row][1]) > 0:  # committee volunteering hours
+        reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{int(other_hours[row][1])*committee_volunteer_rules})\n'
+    if other_hours[row][0] != "" and float(other_hours[row][0]) > 0:  # tutored hours
+        reason += f'-tutoring hours done: {other_hours[row][0]} (-{int(other_hours[row][0])*tutoring_rules})\n'
 
     # if "reason" string is still empty after all that - no reason added
     if not reason: reason = "None added"
