@@ -35,7 +35,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -62,11 +62,14 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 initializing everything the 1st time - Google service account will auto-authenticate without us interacting with
 web browsers manually
 """
-# creds = credentials = service_account.Credentials.from_service_account_file(
-#    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
-creds = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+# uncomment this line when running on VM
+creds = credentials = service_account.Credentials.from_service_account_file(
+    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+
+# uncomment this line when running on local machine
+# creds = service_account.Credentials.from_service_account_file(
+#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -242,11 +245,11 @@ async def noteCommand(interaction: discord.Interaction):
     other_hours_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=OTHER_HOURS_RANGE).execute()
     other_hours = other_hours_fetch.get('values', [])
 
-    tabling_rule = os.getenv('TABLING_HOURS')
-    tabling_missed_rule = os.getenv('TABLING_MISSED')
-    study_hours_rules = os.getenv('STUDY_HOURS')
-    committee_volunteer_rules = os.getenv('COMMITTEE_HOURS')
-    tutoring_rules = os.getenv('TUTORED_HOURS')
+    tabling_rule = float(os.getenv('TABLING_HOURS'))
+    tabling_missed_rule = float(os.getenv('TABLING_MISSED'))
+    study_hours_rules = float(os.getenv('STUDY_HOURS'))
+    committee_volunteer_rules = float(os.getenv('COMMITTEE_HOURS'))
+    tutoring_rules = float(os.getenv('TUTORED_HOURS'))
 
     # "reason" string to hold bad standing reasons to add to cells' notes
     reason: str = ""
@@ -291,17 +294,22 @@ async def noteCommand(interaction: discord.Interaction):
                     reason += "-missed " + event_titles[i] + " (+1)\n"
                 elif x_check[1:][k][i] == "t":
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
-        # checking for tabling, study, committee volunteering, tutoring hours
+        # checking for OTHER hours, tabling, tabling MISSED, study, committee volunteering, tutoring hours
+        # "OTHER" hours include any new rules imposed by Scribe or chairs for bad standing points rewards
         if other_hours[k][4] != "" and float(other_hours[k][4]) > 0:  # tabling hours
-            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{int(other_hours[k][4])*tabling_rule})\n'
+            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{float(other_hours[k][4])*tabling_rule})\n'
         if other_hours[k][3] != "" and float(other_hours[k][3]) > 0:  # tabling hours MISSED
-            reason += f'-missed tabling hours: {other_hours[k][3]} (+{int(other_hours[k][3])*tabling_missed_rule})\n'
+            reason += f'-missed tabling hours: {other_hours[k][3]} (+{float(other_hours[k][3])*tabling_missed_rule})\n'
         if other_hours[k][2] != "" and float(other_hours[k][2]) > 0:  # study hours
-            reason += f'-study hours attended: {other_hours[k][2]} (-{int(other_hours[k][2])*study_hours_rules})\n'
+            reason += f'-study hours attended: {other_hours[k][2]} (-{float(other_hours[k][2])*study_hours_rules})\n'
         if other_hours[k][1] != "" and float(other_hours[k][1]) > 0:  # committee volunteering hours
-            reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{int(other_hours[k][1])*committee_volunteer_rules})\n'
+            reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{float(other_hours[k][1])*committee_volunteer_rules})\n'
         if other_hours[k][0] != "" and float(other_hours[k][0]) > 0:  # tutored hours
-            reason += f'-tutoring hours done: {other_hours[k][0]} (-{int(other_hours[k][0])*tutoring_rules})\n'
+            reason += f'-tutoring hours done: {other_hours[k][0]} (-{float(other_hours[k][0])*tutoring_rules})\n'
+        if other_hours[k][5] != "" and float(other_hours[k][5]) > 0:  # tabling hours
+            reason += f'-Other rewards: {other_hours[k][5]} (-{float(other_hours[k][5])})\n'
+        if other_hours[k][6] != "" and float(other_hours[k][6]) > 0:  # tabling hours
+            reason += f'-Other penalties: {other_hours[k][6]} (+{float(other_hours[k][6])})\n'
 
         # Create the request body to add the note to the specified cell
         requests.append({
@@ -381,11 +389,11 @@ async def badStandingCheck(interaction: discord.Interaction):
     other_hours_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=OTHER_HOURS_RANGE).execute()
     other_hours = other_hours_fetch.get('values', [])
 
-    tabling_rule = os.getenv('TABLING_HOURS')
-    tabling_missed_rule = os.getenv('TABLING_MISSED')
-    study_hours_rules = os.getenv('STUDY_HOURS')
-    committee_volunteer_rules = os.getenv('COMMITTEE_HOURS')
-    tutoring_rules = os.getenv('TUTORED_HOURS')
+    tabling_rule = float(os.getenv('TABLING_HOURS'))
+    tabling_missed_rule = float(os.getenv('TABLING_MISSED'))
+    study_hours_rules = float(os.getenv('STUDY_HOURS'))
+    committee_volunteer_rules = float(os.getenv('COMMITTEE_HOURS'))
+    tutoring_rules = float(os.getenv('TUTORED_HOURS'))
 
     reason: str = ""
 
@@ -407,16 +415,19 @@ async def badStandingCheck(interaction: discord.Interaction):
 
     # checking for tabling, study, committee volunteering, tutoring hours
     if other_hours[row][4] != "" and float(other_hours[row][4]) > 0:  # tabling hours
-        reason += f'-Extra tabling hours: {other_hours[row][4]} (-{int(other_hours[row][4]*tabling_rule)})\n'
+        reason += f'-Extra tabling hours: {other_hours[row][4]} (-{float(other_hours[row][4]*tabling_rule)})\n'
     if other_hours[row][3] != "" and float(other_hours[row][3]) > 0:  # tabling hours MISSED
-        reason += f'-missed tabling hours: {other_hours[row][3]} (+{int(other_hours[row][3])*tabling_missed_rule})\n'
+        reason += f'-missed tabling hours: {other_hours[row][3]} (+{float(other_hours[row][3])*tabling_missed_rule})\n'
     if other_hours[row][2] != "" and float(other_hours[row][2]) > 0:  # study hours
-        reason += f'-study hours attended: {other_hours[row][2]} (-{int(other_hours[row][2])*study_hours_rules})\n'
+        reason += f'-study hours attended: {other_hours[row][2]} (-{float(other_hours[row][2])*study_hours_rules})\n'
     if other_hours[row][1] != "" and float(other_hours[row][1]) > 0:  # committee volunteering hours
-        reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{int(other_hours[row][1])*committee_volunteer_rules})\n'
+        reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{float(other_hours[row][1])*committee_volunteer_rules})\n'
     if other_hours[row][0] != "" and float(other_hours[row][0]) > 0:  # tutored hours
-        reason += f'-tutoring hours done: {other_hours[row][0]} (-{int(other_hours[row][0])*tutoring_rules})\n'
-
+        reason += f'-tutoring hours done: {other_hours[row][0]} (-{float(other_hours[row][0])*tutoring_rules})\n'
+    if other_hours[row][5] != "" and float(other_hours[row][5]) > 0:  # OTHER REWARD hours
+        reason += f'-Other rewards: {other_hours[row][5]} (-{float(other_hours[row][5])})\n'
+    if other_hours[row][6] != "" and float(other_hours[row][6]) > 0:  # OTHER PENALTY hours
+        reason += f'-Other penalties: {other_hours[row][6]} (+{float(other_hours[row][6])})\n'
     # if "reason" string is still empty after all that - no reason added
     if not reason: reason = "None added"
 
