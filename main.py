@@ -35,7 +35,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 # for debugging
 print(TOKEN)
 
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"  # uncomment this line when running on local machine
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -64,12 +64,12 @@ web browsers manually
 """
 
 # uncomment this line when running on VM
-creds = credentials = service_account.Credentials.from_service_account_file(
-    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#     os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
 # uncomment this line when running on local machine
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -296,20 +296,21 @@ async def noteCommand(interaction: discord.Interaction):
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
         # checking for OTHER hours, tabling, tabling MISSED, study, committee volunteering, tutoring hours
         # "OTHER" hours include any new rules imposed by Scribe or chairs for bad standing points rewards
-        if other_hours[k][4] != "" and float(other_hours[k][4]) > 0:  # tabling hours
-            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{float(other_hours[k][4])*tabling_rule})\n'
-        if other_hours[k][3] != "" and float(other_hours[k][3]) > 0:  # tabling hours MISSED
-            reason += f'-missed tabling hours: {other_hours[k][3]} (+{float(other_hours[k][3])*tabling_missed_rule})\n'
-        if other_hours[k][2] != "" and float(other_hours[k][2]) > 0:  # study hours
-            reason += f'-study hours attended: {other_hours[k][2]} (-{float(other_hours[k][2])*study_hours_rules})\n'
-        if other_hours[k][1] != "" and float(other_hours[k][1]) > 0:  # committee volunteering hours
-            reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{float(other_hours[k][1])*committee_volunteer_rules})\n'
-        if other_hours[k][0] != "" and float(other_hours[k][0]) > 0:  # tutored hours
-            reason += f'-tutoring hours done: {other_hours[k][0]} (-{float(other_hours[k][0])*tutoring_rules})\n'
-        if other_hours[k][5] != "" and float(other_hours[k][5]) > 0:  # tabling hours
-            reason += f'-Other rewards: {other_hours[k][5]} (-{float(other_hours[k][5])})\n'
-        if other_hours[k][6] != "" and float(other_hours[k][6]) > 0:  # tabling hours
-            reason += f'-Other penalties: {other_hours[k][6]} (+{float(other_hours[k][6])})\n'
+        if k < len(other_hours):  # to avoid out_of_index error
+            if other_hours[k][4] != "" and float(other_hours[k][4]) > 0:  # tabling hours
+                reason += f'-Extra tabling hours: {other_hours[k][4]} (-{float(other_hours[k][4])*tabling_rule})\n'
+            if other_hours[k][3] != "" and float(other_hours[k][3]) > 0:  # tabling hours MISSED
+                reason += f'-missed tabling hours: {other_hours[k][3]} (+{float(other_hours[k][3])*tabling_missed_rule})\n'
+            if other_hours[k][2] != "" and float(other_hours[k][2]) > 0:  # study hours
+                reason += f'-study hours attended: {other_hours[k][2]} (-{float(other_hours[k][2])*study_hours_rules})\n'
+            if other_hours[k][1] != "" and float(other_hours[k][1]) > 0:  # committee volunteering hours
+                reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{float(other_hours[k][1])*committee_volunteer_rules})\n'
+            if other_hours[k][0] != "" and float(other_hours[k][0]) > 0:  # tutored hours
+                reason += f'-tutoring hours done: {other_hours[k][0]} (-{float(other_hours[k][0])*tutoring_rules})\n'
+            if other_hours[k][5] != "" and float(other_hours[k][5]) > 0:  # tabling hours
+                reason += f'-Other rewards: {other_hours[k][5]} (-{float(other_hours[k][5])})\n'
+            if other_hours[k][6] != "" and float(other_hours[k][6]) > 0:  # tabling hours
+                reason += f'-Other penalties: {other_hours[k][6]} (+{float(other_hours[k][6])})\n'
 
         # Create the request body to add the note to the specified cell
         requests.append({
@@ -413,23 +414,27 @@ async def badStandingCheck(interaction: discord.Interaction):
             elif x_check[row+1][i] == "t":
                 reason += "-late to " + event_titles[i] + " (+0.5)\n"
 
-    # checking for tabling, study, committee volunteering, tutoring hours
-    if other_hours[row][4] != "" and float(other_hours[row][4]) > 0:  # tabling hours
-        reason += f'-Extra tabling hours: {other_hours[row][4]} (-{float(other_hours[row][4]*tabling_rule)})\n'
-    if other_hours[row][3] != "" and float(other_hours[row][3]) > 0:  # tabling hours MISSED
-        reason += f'-missed tabling hours: {other_hours[row][3]} (+{float(other_hours[row][3])*tabling_missed_rule})\n'
-    if other_hours[row][2] != "" and float(other_hours[row][2]) > 0:  # study hours
-        reason += f'-study hours attended: {other_hours[row][2]} (-{float(other_hours[row][2])*study_hours_rules})\n'
-    if other_hours[row][1] != "" and float(other_hours[row][1]) > 0:  # committee volunteering hours
-        reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{float(other_hours[row][1])*committee_volunteer_rules})\n'
-    if other_hours[row][0] != "" and float(other_hours[row][0]) > 0:  # tutored hours
-        reason += f'-tutoring hours done: {other_hours[row][0]} (-{float(other_hours[row][0])*tutoring_rules})\n'
-    if other_hours[row][5] != "" and float(other_hours[row][5]) > 0:  # OTHER REWARD hours
-        reason += f'-Other rewards: {other_hours[row][5]} (-{float(other_hours[row][5])})\n'
-    if other_hours[row][6] != "" and float(other_hours[row][6]) > 0:  # OTHER PENALTY hours
-        reason += f'-Other penalties: {other_hours[row][6]} (+{float(other_hours[row][6])})\n'
-    # if "reason" string is still empty after all that - no reason added
-    if not reason: reason = "None added"
+    if row >= len(other_hours):  # to avoid out_of_index error
+        reason = "None Added"
+
+    else:
+        # checking for tabling, study, committee volunteering, tutoring hours
+        if other_hours[row][4] != "" and float(other_hours[row][4]) > 0:  # tabling hours
+            reason += f'-Extra tabling hours: {other_hours[row][4]} (-{float(other_hours[row][4]*tabling_rule)})\n'
+        if other_hours[row][3] != "" and float(other_hours[row][3]) > 0:  # tabling hours MISSED
+            reason += f'-missed tabling hours: {other_hours[row][3]} (+{float(other_hours[row][3])*tabling_missed_rule})\n'
+        if other_hours[row][2] != "" and float(other_hours[row][2]) > 0:  # study hours
+            reason += f'-study hours attended: {other_hours[row][2]} (-{float(other_hours[row][2])*study_hours_rules})\n'
+        if other_hours[row][1] != "" and float(other_hours[row][1]) > 0:  # committee volunteering hours
+            reason += f'-committee volunteering hours done: {other_hours[row][1]} (-{float(other_hours[row][1])*committee_volunteer_rules})\n'
+        if other_hours[row][0] != "" and float(other_hours[row][0]) > 0:  # tutored hours
+            reason += f'-tutoring hours done: {other_hours[row][0]} (-{float(other_hours[row][0])*tutoring_rules})\n'
+        if other_hours[row][5] != "" and float(other_hours[row][5]) > 0:  # OTHER REWARD hours
+            reason += f'-Other rewards: {other_hours[row][5]} (-{float(other_hours[row][5])})\n'
+        if other_hours[row][6] != "" and float(other_hours[row][6]) > 0:  # OTHER PENALTY hours
+            reason += f'-Other penalties: {other_hours[row][6]} (+{float(other_hours[row][6])})\n'
+        # if "reason" string is still empty after all that - no reason added
+        if not reason: reason = "None added"
 
     good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
 
