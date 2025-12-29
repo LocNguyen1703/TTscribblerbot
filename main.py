@@ -750,15 +750,15 @@ async def setBotFunction(interaction: discord.Interaction, day: str, hour: str, 
 async def guidelines(interaction: discord.Interaction):
     response: str = f'Here are some tips on how to use the bot commands\n' \
                     f'- "set_message" command: format to enter dateTime is YYYY-MM-DD HH:MM (use 24hr system)\n' \
-                    f' - file_path: copy/paste path of file you want to send from your computer OR "none" for ' \
+                    f'  - file_path: copy/paste path of file you want to send from your computer OR "none" for ' \
                     f'no file\n' \
                     f'- "set_timely_message" command: you can specify "none" or add a value to create a specific ' \
                     f'time you want\n' \
-                    f' - second: values from 0 to 59 OR "none" - at which second message is sent EVERY MINUTE\n' \
-                    f' - minute: values from 0 to 59 OR "none" - at which minute message is sent EVERY HOUR\n' \
-                    f' - hour: values from 0 to 23 OR "none" - at which hour message is sent EVERY DAY\n' \
-                    f' - day: values from 1 to 31 OR "none" - on which day message is sent EVERY MONTH\n' \
-                    f' - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
+                    f'  - second: values from 0 to 59 OR "none" - at which second message is sent EVERY MINUTE\n' \
+                    f'  - minute: values from 0 to 59 OR "none" - at which minute message is sent EVERY HOUR\n' \
+                    f'  - hour: values from 0 to 23 OR "none" - at which hour message is sent EVERY DAY\n' \
+                    f'  - day: values from 1 to 31 OR "none" - on which day message is sent EVERY MONTH\n' \
+                    f'  - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
                     f'for no file\n' \
                     f'- "note" command: no input needed - for Scribe-only purposes\n' \
                     f'- "add_event" & "add_whole_day_event" commands - no input needed - for Scribe-only purposes\n' \
@@ -768,14 +768,14 @@ async def guidelines(interaction: discord.Interaction):
                     f'- "events_check" command: - no input needed\n' \
                     f'- "test" command: no input needed - for Scribe-only purposes\n' \
                     f'- "set-dm" command: schedules a DM to all people under any certain role' \
-                    f' - date_time: enter date-time of message with format YYYY-MM-DD HH:MM (use 24hr system)\n' \
-                    f' - message: message to send at scheduled time\n' \
-                    f' - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
+                    f'  - date_time: enter date-time of message with format YYYY-MM-DD HH:MM (use 24hr system)\n' \
+                    f'  - message: message to send at scheduled time\n' \
+                    f'  - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
                     f'for no file\n' \
-                    f' - role_name: name of role you want your DM to reach to\n' \
+                    f'  - role_name: name of role you want your DM to reach to\n' \
                     f'- "set_timely_dm" command: sets timely DM to all people under any certain role' \
-                    f' - role_name: name of role you want your DM to reach to\n' \
-                    f' - all other inputs use similar format as "set_timely_message_ command\n' \
+                    f'  - role_name: name of role you want your DM to reach to\n' \
+                    f'  - all other inputs use similar format as "set_timely_message_ command\n' \
                     f'- "timely_bad_standing_dm" command: for Scribe-only purposes - DO NOT TOUCH!\n' \
                     f'refer to Brother Scribe for more instructions if needed!\n' \
                     f'message will terminate in T-minus 90 seconds' \
