@@ -298,21 +298,21 @@ async def noteCommand(interaction: discord.Interaction):
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
         # checking for OTHER hours, tabling, tabling MISSED, study, committee volunteering, tutoring hours
         # "OTHER" hours include any new rules imposed by Scribe or chairs for bad standing points rewards
-        if k < len(other_hours):  # to avoid out_of_index error
-            if other_hours[k][4] != "" and float(other_hours[k][4]) > 0:  # tabling hours
-                reason += f'-Extra tabling hours: {other_hours[k][4]} (-{float(other_hours[k][4])*tabling_rule})\n'
-            if other_hours[k][3] != "" and float(other_hours[k][3]) > 0:  # tabling hours MISSED
-                reason += f'-missed tabling hours: {other_hours[k][3]} (+{float(other_hours[k][3])*tabling_missed_rule})\n'
-            if other_hours[k][2] != "" and float(other_hours[k][2]) > 0:  # study hours
-                reason += f'-study hours attended: {other_hours[k][2]} (-{float(other_hours[k][2])*study_hours_rules})\n'
-            if other_hours[k][1] != "" and float(other_hours[k][1]) > 0:  # committee volunteering hours
-                reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{float(other_hours[k][1])*committee_volunteer_rules})\n'
-            if other_hours[k][0] != "" and float(other_hours[k][0]) > 0:  # tutored hours
-                reason += f'-tutoring hours done: {other_hours[k][0]} (-{float(other_hours[k][0])*tutoring_rules})\n'
-            if other_hours[k][5] != "" and float(other_hours[k][5]) > 0:  # OTHER rewarding hours not accounted for
-                reason += f'-Other rewards: {other_hours[k][5]} (-{float(other_hours[k][5])})\n'
-            if other_hours[k][6] != "" and float(other_hours[k][6]) > 0:  # OTHER penalty hours not accounted for
-                reason += f'-Other penalties: {other_hours[k][6]} (+{float(other_hours[k][6])})\n'
+
+        if other_hours[k][4] != "" and float(other_hours[k][4]) > 0:  # tabling hours
+            reason += f'-Extra tabling hours: {other_hours[k][4]} (-{float(other_hours[k][4])*tabling_rule})\n'
+        if other_hours[k][3] != "" and float(other_hours[k][3]) > 0:  # tabling hours MISSED
+            reason += f'-missed tabling hours: {other_hours[k][3]} (+{float(other_hours[k][3])*tabling_missed_rule})\n'
+        if other_hours[k][2] != "" and float(other_hours[k][2]) > 0:  # study hours
+            reason += f'-study hours attended: {other_hours[k][2]} (-{float(other_hours[k][2])*study_hours_rules})\n'
+        if other_hours[k][1] != "" and float(other_hours[k][1]) > 0:  # committee volunteering hours
+            reason += f'-committee volunteering hours done: {other_hours[k][1]} (-{float(other_hours[k][1])*committee_volunteer_rules})\n'
+        if other_hours[k][0] != "" and float(other_hours[k][0]) > 0:  # tutored hours
+            reason += f'-tutoring hours done: {other_hours[k][0]} (-{float(other_hours[k][0])*tutoring_rules})\n'
+        if other_hours[k][5] != "" and float(other_hours[k][5]) > 0:  # OTHER rewarding hours not accounted for
+            reason += f'-Other rewards: {other_hours[k][5]} (-{float(other_hours[k][5])})\n'
+        if other_hours[k][6] != "" and float(other_hours[k][6]) > 0:  # OTHER penalty hours not accounted for
+            reason += f'-Other penalties: {other_hours[k][6]} (+{float(other_hours[k][6])})\n'
 
         # Create the request body to add the note to the specified cell
         requests.append({
@@ -403,17 +403,14 @@ async def badStandingCheck(interaction: discord.Interaction):
         await interaction.response.send_message("no event created - this message is only visible to you and will "
                                                 "terminate in T-minus 60 seconds", ephemeral=True, delete_after=60)
 
-    if len(x_check[row+1]) != 0:
+    if row < len(x_check) and len(x_check[row+1]) != 0:  # to avoid out_of_index error
         for i in range(len(x_check[row+1])):
             if x_check[row+1][i] == "x":  # row+1 takes into account mismatch caused by 1st row of event_titles
                 reason += "-missed " + event_titles[i] + " (+1)\n"
             elif x_check[row+1][i] == "t":
                 reason += "-late to " + event_titles[i] + " (+0.5)\n"
 
-    if row >= len(other_hours):  # to avoid out_of_index error
-        reason = "None Added"
-
-    else:
+    if row < len(other_hours):  # to avoid out_of_index error
         # checking for tabling, study, committee volunteering, tutoring hours
         if other_hours[row][4] != "" and float(other_hours[row][4]) > 0:  # tabling hours
             reason += f'-Extra tabling hours: {other_hours[row][4]} (-{float(other_hours[row][4]*tabling_rule)})\n'
@@ -429,10 +426,11 @@ async def badStandingCheck(interaction: discord.Interaction):
             reason += f'-Other rewards: {other_hours[row][5]} (-{float(other_hours[row][5])})\n'
         if other_hours[row][6] != "" and float(other_hours[row][6]) > 0:  # OTHER PENALTY hours not accounted for
             reason += f'-Other penalties: {other_hours[row][6]} (+{float(other_hours[row][6])})\n'
-        # if "reason" string is still empty after all that - no reason added
-        if not reason: reason = "None added"
 
     good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
+
+    # if "reason" string is still empty after all that - no reason added
+    if not reason: reason = "None Added"
 
     response: str = f"hey {name}! you currently have {scores[row][0]} points, which means " \
                     f"you're{good_standing_check} in bad standing!\nreasons: \n\n{reason}\nif you have any questions" \
@@ -640,14 +638,15 @@ async def print_bad_status(guild: discord.Guild):
         username = members_lst[member]
         row = names.index([username])
 
-        if not x_check[row+1]: reason = "None added"
-        else:
+        # if not x_check[row+1]: reason = "None added"
+        if row < len(x_check):  # to avoid out-of-index error
             for i in range(len(x_check[row+1])):
                 if x_check[row+1][i] == "x":  # row+1 takes into account mismatch caused by 1st row of event_titles
                     reason += "-missed " + event_titles[i] + " (+1)\n"
                 elif x_check[row+1][i] == "t":
                     reason += "-late to " + event_titles[i] + " (+0.5)\n"
             # checking for tabling, study, committee volunteering, tutoring hours
+        if row < len(other_hours):  # to avoid out-of-index error
             if other_hours[row][4] != "" and float(other_hours[row][4]) > 0:  # tabling hours
                 reason += f'-Extra tabling hours: {other_hours[row][4]} (-{float(other_hours[row][4])*tabling_rule})\n'
             if other_hours[row][3] != "" and float(other_hours[row][3]) > 0:  # tabling hours MISSED
@@ -664,6 +663,8 @@ async def print_bad_status(guild: discord.Guild):
                 reason += f'-tutoring hours done: {other_hours[row][6]} (-{float(other_hours[row][6])*tutoring_rules})\n'
 
         good_standing_check: str = ' not' if float(scores[row][0]) < 2 else ""
+
+        if not reason: reason = "None added"
 
         response: str = f"hey {username}, here is your weekly bad-standing status update! you currently have " \
                         f"{scores[row][0]} points, which means you're{good_standing_check} in bad standing!\n" \
