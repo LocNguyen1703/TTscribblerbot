@@ -36,7 +36,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
 
 # UNCOMMENT THIS LINE WHEN RUNNING ON LOCAL MACHINE
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -65,12 +65,12 @@ web browsers manually
 """
 
 # UNCOMMENT THESE LINES WHEN RUNNING ON VM!
-creds = credentials = service_account.Credentials.from_service_account_file(
-    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#     os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
 # UNCOMMENT THESE LINES WHEN RUNNING ON LOCAL MACHINE! (e.g. for testing purposes)
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -765,8 +765,9 @@ async def guidelines(interaction: discord.Interaction):
                     f'- "add_event" & "add_whole_day_event" commands - no input needed - for Scribe-only purposes\n' \
                     f'- "bad_standing_check" command: no input needed - bot will DM you your bad standing status\n' \
                     f'- "cancel_all_scheduled_messages" command: no input needed - NOTIFY BROTHER SCRIBE ' \
-                    f'IF YOU USE IT!\n' \
-                    f'- "events_check" command: - no input needed\n' \
+                    f'IF YOU USE IT!\n'
+    response2: str = f'- "events_check" command: receives bot DM on upcoming events in calendar\n' \
+                    f'  - no_of_events: how many upcoming events in the calendar you want to see - NO DECIMAL NUMBERS\n' \
                     f'- "test" command: no input needed - for Scribe-only purposes\n' \
                     f'- "set-dm" command: schedules a DM to all people under any certain role' \
                     f'  - date_time: enter date-time of message with format YYYY-MM-DD HH:MM (use 24hr system)\n' \
@@ -785,14 +786,22 @@ async def guidelines(interaction: discord.Interaction):
                                             " This message is only available to you and will terminate in T-minus "
                                             "90 seconds", ephemeral=True, delete_after=60)
     await interaction.user.send(response, delete_after=90)
+    await interaction.user.send(response2, delete_after=90)
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO NOTIFY EVENTS IN WEEK/MONTH
 @bot.tree.command(name='events_check')
-async def notifyEvents(interaction: discord.Interaction):
+async def notifyEvents(interaction: discord.Interaction, no_of_events: int):
+    if no_of_events > 29:
+        await interaction.response.send_message("please enter a value smaller than 29 - otherwise I might explode. "
+                                                "This message is only visible to you and will terminate in "
+                                                "T-minus 60 seconds",
+                                                ephemeral=True, delete_after=60)
+        return "invalid value entered"
+
     now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     events_result = service_calendars.events().list(calendarId='bkshlhck01pl08tgfif8qj89no@group.calendar.google.com',
-                                                    timeMin=now, maxResults=29, singleEvents=True,
+                                                    timeMin=now, maxResults=int(no_of_events), singleEvents=True,
                                                     orderBy='startTime').execute()
     # events_result is a "response body" (kinda like the request body we created in note command)
 
@@ -832,7 +841,9 @@ async def notifyEvents(interaction: discord.Interaction):
             event_list.append(f"{start} - {event['summary']} (Ends at {end})")
 
         response: str = "\n".join(event_list)
-        await interaction.response.send_message(f'here are the {len(event_list)} events upcoming events: \n{response}\n'
+        plural1 = "are" if len(event_list) > 1 else "is"
+        plural2 = "events" if len(event_list) > 1 else "event"
+        await interaction.response.send_message(f'here {plural1} the {len(event_list)} upcoming {plural2}: \n{response}\n'
                                                 f'This message is only visible to you and will terminate in '
                                                 f'T-minus 60 seconds', ephemeral=True, delete_after=60)
         print(
