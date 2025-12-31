@@ -750,13 +750,13 @@ async def setBotFunction(interaction: discord.Interaction, day: str, hour: str, 
 @bot.tree.command(name='help')
 async def guidelines(interaction: discord.Interaction):
     response: str = f'Here are some tips on how to use the bot commands\n' \
-                    f'- "set_message" command: schedules a one-time message to send out to a channel in the server\n' \
+                    f'- **/set_message command**: schedules a one-time message to send out to a channel in the server\n' \
                     f'  - date_time: enter in YYYY-MM-DD HH:MM format (use 24hr system) - e.g. 2026-03-17 08:15\n' \
                     f'  - message: message to send at scheduled time\n' \
                     f'  - file_path: copy/paste path of file you want to send from your computer OR "none" for ' \
                     f'no file\n' \
                     f'  - channel_name: name of the channel in the server you want the message to send in\n' \
-                    f'- "set_timely_message" command: you can specify "none" or add a value to create a specific ' \
+                    f'- **/set_timely_message command**: you can specify "none" or add a value to create a specific ' \
                     f'time you want\n' \
                     f'  - second: values from 0 to 59 OR "none" - at which second message is sent EVERY MINUTE\n' \
                     f'  - minute: values from 0 to 59 OR "none" - at which minute message is sent EVERY HOUR\n' \
@@ -765,25 +765,32 @@ async def guidelines(interaction: discord.Interaction):
                     f'  - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
                     f'for no file\n' \
                     f'  - channel_name: name of the channel in the server you want the message to send in\n' \
-                    f'- "note" command: no input needed - for Scribe-only purposes\n' \
-                    f'- "add_event" & "add_whole_day_event" commands - no input needed - for Scribe-only purposes\n'
-    response2: str = f'- "bad_standing_check" command: no input needed - bot DMs you your bad standing status\n' \
-                    f'  - NOBODY will see the bad standing points message but you!' \
-                    f'- "cancel_all_scheduled_messages" command: no input needed - NOTIFY BROTHER SCRIBE ' \
+                    f'- **/note command**: no input needed - for Scribe-only purposes\n' \
+                    f'- **/add_event command**: no input needed - for Scribe-only purposes\n' \
+                    f'- **/add_whole_day_event command**: no input needed - for Scribe-only purposes\n'
+    response2: str = f'- **/bad_standing_check command**: bot DMs you your bad standing status (no input needed)\n' \
+                    f'  - if you are **NOT an ACTIVE member** - this command most likely will not work for you\n' \
+                    f'  - **NO ONE will be able to see the bad standing points Bot DM but you!**\n' \
+                    f'- **/cancel_all_scheduled_messages command**: no input needed - NOTIFY BROTHER SCRIBE ' \
                     f'IF YOU USE IT!\n'\
-                    f'- "events_check" command: receives bot DM on upcoming events in calendar\n' \
+                    f'- **/events_check command**: receives bot DM on upcoming events in calendar\n' \
                     f'  - no_of_events: how many upcoming events in the calendar you want to see - NO DECIMAL NUMBERS\n' \
-                    f'- "test" command: no input needed - for Scribe-only purposes\n' \
-                    f'- "set-dm" command: schedules a one-time DM to all people under any certain role' \
+                    f'- **/test command**: no input needed - for Scribe-only purposes\n' \
+                    f'- **/set_dm command**: schedules a one-time DM to all people under any certain role\n' \
                     f'  - date_time: enter date-time of message with format YYYY-MM-DD HH:MM (use 24hr system)\n' \
                     f'  - message: message to send at scheduled time\n' \
                     f'  - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
                     f'for no file\n' \
                     f'  - role_name: name of role you want your DM to reach to\n' \
-                    f'- "set_timely_dm" command: sets timely DM to all people under any certain role' \
+                    f'- **/set_timely_dm command**: sets timely DM to all people under any certain role\n' \
+                    f'  - second: values from 0 to 59 OR "none" - at which second message is sent EVERY MINUTE\n' \
+                    f'  - minute: values from 0 to 59 OR "none" - at which minute message is sent EVERY HOUR\n' \
+                    f'  - hour: values from 0 to 23 OR "none" - at which hour message is sent EVERY DAY\n' \
+                    f'  - day: values from 1 to 31 OR "none" - on which day message is sent EVERY MONTH\n' \
+                    f'  - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
+                    f'for no file\n' \
                     f'  - role_name: name of role you want your DM to reach to\n' \
-                    f'  - all other inputs use similar format as "set_timely_message_ command\n' \
-                    f'- "timely_bad_standing_dm" command: for Scribe-only purposes - DO NOT TOUCH!\n' \
+                    f'- **/timely_bad_standing_dm command**: for Scribe-only purposes - DO NOT TOUCH!\n' \
                     f'refer to Brother Scribe for more instructions if needed!\n' \
                     f'message will terminate in T-minus 90 seconds' \
 
@@ -792,6 +799,8 @@ async def guidelines(interaction: discord.Interaction):
                                             "90 seconds", ephemeral=True, delete_after=60)
     await interaction.user.send(response, delete_after=90)
     await interaction.user.send(response2, delete_after=90)
+    # what if I either add functionality to this command or make a new command that allows for
+    # retrieving instructions on only ONE specific command the user wants?
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO NOTIFY EVENTS IN WEEK/MONTH
@@ -848,44 +857,13 @@ async def notifyEvents(interaction: discord.Interaction, no_of_events: int):
         response: str = "\n".join(event_list)
         plural1 = "are" if len(event_list) > 1 else "is"
         plural2 = "events" if len(event_list) > 1 else "event"
-        await interaction.response.send_message(f'here {plural1} the {len(event_list)} upcoming {plural2}: \n{response}\n'
+        await interaction.response.send_message(f'here {plural1} the {len(event_list)} upcoming {plural2}'
+                                                f' (following the YYYY-MM-DD format and using the 24HR system):'
+                                                f' \n{response}\n'
                                                 f'This message is only visible to you and will terminate in '
                                                 f'T-minus 60 seconds', ephemeral=True, delete_after=60)
         print(
             len(response + 'here are the events upcoming events: \n\nThis message is only visible to you and will terminate in T-minus 60 seconds'))
-
-    """
-    current message - will need to edit this for better understanding for user:
-here are the 10 events upcoming events: 
-2024-07-22T17:00:00-07:00 - Accelerate deep work session (5-7pm)
-2024-07-23T18:00:00-07:00 - invite-only workshops/events
-2024-07-24T17:00:00-07:00 - Accelerate deep work session (5-7pm)
-2024-07-27T10:00:00-07:00 - Accelerate deep work session (10-12pm)
-2024-07-29T17:00:00-07:00 - Accelerate deep work session (5-7pm)
-2024-07-30T18:00:00-07:00 - invite-only workshops/events
-2024-07-31T17:00:00-07:00 - Accelerate deep work session (5-7pm)
-2024-08-03T10:00:00-07:00 - Accelerate deep work session (10-12pm)
-2024-08-05T17:00:00-07:00 - Accelerate deep work session (5-7pm)
-2024-08-06T18:00:00-07:00 - invite-only workshops/events
-This message is only visible to you and will terminate in T-minus 60 seconds
-
-message after some editing - taking into account whole-day events (much more understandable): 
-here are the 10 events upcoming events: 
-2024-08-21 - Week of Welcome  (Ends at 2024-08-26)
-2024-08-25 18:00:00-07:00 - Chapter Zero (Ends at 22:00)
-2024-08-26 - First Day of Classes (Ends at 2024-08-27)
-2024-08-27 11:00:00-07:00 - Recruitment: Tabling (Ends at 18:00)
-2024-08-29 18:00:00-07:00 - Polish Week Event & pro-devo sign language workshop (potentially Pro-devo dresscode workshop) (Ends at 20:00)
-2024-08-30 18:00:00-07:00 - Alpha Delta Initiation  (Ends at 20:00)
-2024-09-02 - Holiday - No Classes (Ends at 2024-09-03)
-2024-09-02 19:00:00-07:00 - Formal Chapter (Ends at 21:00)
-2024-09-03 17:00:00-07:00 - Recruitment: Meet-the-Bros (Ends at 19:00)
-2024-09-04 17:30:00-07:00 - Recruitment: Comm-serv event (Ends at 20:00)
-This message is only visible to you and will terminate in T-minus 60 seconds
-
-
-
-    """
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO INSERT AN EVENT/MULTIPLE EVENTS
