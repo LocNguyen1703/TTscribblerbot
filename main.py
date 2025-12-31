@@ -750,9 +750,12 @@ async def setBotFunction(interaction: discord.Interaction, day: str, hour: str, 
 @bot.tree.command(name='help')
 async def guidelines(interaction: discord.Interaction):
     response: str = f'Here are some tips on how to use the bot commands\n' \
-                    f'- "set_message" command: format to enter dateTime is YYYY-MM-DD HH:MM (use 24hr system)\n' \
+                    f'- "set_message" command: schedules a one-time message to send out to a channel in the server\n' \
+                    f'  - date_time: enter in YYYY-MM-DD HH:MM format (use 24hr system) - e.g. 2026-03-17 08:15\n' \
+                    f'  - message: message to send at scheduled time\n' \
                     f'  - file_path: copy/paste path of file you want to send from your computer OR "none" for ' \
                     f'no file\n' \
+                    f'  - channel_name: name of the channel in the server you want the message to send in\n' \
                     f'- "set_timely_message" command: you can specify "none" or add a value to create a specific ' \
                     f'time you want\n' \
                     f'  - second: values from 0 to 59 OR "none" - at which second message is sent EVERY MINUTE\n' \
@@ -761,15 +764,17 @@ async def guidelines(interaction: discord.Interaction):
                     f'  - day: values from 1 to 31 OR "none" - on which day message is sent EVERY MONTH\n' \
                     f'  - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
                     f'for no file\n' \
+                    f'  - channel_name: name of the channel in the server you want the message to send in\n' \
                     f'- "note" command: no input needed - for Scribe-only purposes\n' \
-                    f'- "add_event" & "add_whole_day_event" commands - no input needed - for Scribe-only purposes\n' \
-                    f'- "bad_standing_check" command: no input needed - bot will DM you your bad standing status\n' \
+                    f'- "add_event" & "add_whole_day_event" commands - no input needed - for Scribe-only purposes\n'
+    response2: str = f'- "bad_standing_check" command: no input needed - bot DMs you your bad standing status\n' \
+                    f'  - NOBODY will see the bad standing points message but you!' \
                     f'- "cancel_all_scheduled_messages" command: no input needed - NOTIFY BROTHER SCRIBE ' \
-                    f'IF YOU USE IT!\n'
-    response2: str = f'- "events_check" command: receives bot DM on upcoming events in calendar\n' \
+                    f'IF YOU USE IT!\n'\
+                    f'- "events_check" command: receives bot DM on upcoming events in calendar\n' \
                     f'  - no_of_events: how many upcoming events in the calendar you want to see - NO DECIMAL NUMBERS\n' \
                     f'- "test" command: no input needed - for Scribe-only purposes\n' \
-                    f'- "set-dm" command: schedules a DM to all people under any certain role' \
+                    f'- "set-dm" command: schedules a one-time DM to all people under any certain role' \
                     f'  - date_time: enter date-time of message with format YYYY-MM-DD HH:MM (use 24hr system)\n' \
                     f'  - message: message to send at scheduled time\n' \
                     f'  - file_path: copy/paste path of file you want to send from your computer OR "none" ' \
