@@ -36,7 +36,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
 
 # UNCOMMENT THIS LINE WHEN RUNNING ON LOCAL MACHINE
-SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"
+# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -65,12 +65,12 @@ web browsers manually
 """
 
 # UNCOMMENT THESE LINES WHEN RUNNING ON VM!
-# creds = credentials = service_account.Credentials.from_service_account_file(
-#     os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+creds = credentials = service_account.Credentials.from_service_account_file(
+    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
 # UNCOMMENT THESE LINES WHEN RUNNING ON LOCAL MACHINE! (e.g. for testing purposes)
-creds = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+# creds = service_account.Credentials.from_service_account_file(
+#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
