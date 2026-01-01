@@ -112,7 +112,7 @@ async def on_ready() -> None:
     try:
         synced = await bot.tree.sync()
         print(f"synced {len(synced)} command(s)")
-        scheduler.start()
+        if not scheduler.running: scheduler.start()
     except Exception as e:
         print(e)
 
@@ -465,12 +465,24 @@ async def print_message(message: str, file_path: str, input_channel: discord.Tex
 
 
 # helper function to dm message
-async def print_dm(message: str, file_path: str, guild: discord.Guild, role_name: str):
+async def print_dm(message: str, file_path: str, guild_id: int, role_name: str):
+    print("print_dm triggered")  # for debugging
+
+    guild = bot.get_guild(guild_id)
+    if guild is None:
+        print(f' Guild {guild_id} not found (bot may not be ready)')
+        return 0
+
     role = discord.utils.get(guild.roles, name=role_name)  # get role object from input role name
-    print(role)  # for debugging
+    if role is None:  # for debugging
+        print(f'Role {role_name} NOT found')
+        return
+
     edited = "\n".join(message.split("[br]"))
     # filter and put all members with same role object into a list
-    members_with_roles = [member for member in guild.members if role in member.roles and not member.bot]
+    # members_with_roles = [member for member in guild.members if role in member.roles and not member.bot]
+    members_with_roles = [member async for member in guild.fetch_members(limit=None) if role in member.roles
+                          and not member.bot]
 
     for member in members_with_roles:
         print(member.roles)  # for debugging
@@ -573,10 +585,11 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
 # STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
 @bot.tree.command(name='set_timely_dm')
 @app_commands.autocomplete(role_name=role_name_autocomplete)
-async def setTimelyDM(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str,
+async def setTimelyDM(interaction: discord.Interaction, day: str, day_of_week: str, hour: str, minute: str, second: str,
                       message: str, file_path: str, role_name: str):
 
     scheduler.add_job(print_dm, CronTrigger(day=None if day.lower() == "none" else day,
+                                            day_of_week=None if day_of_week.lower() == "none" else day_of_week,
                                             hour=None if hour.lower() == "none" else hour,
                                             minute=None if minute.lower() == "none" else minute,
                                             second=None if second.lower() == "none" else second,
@@ -591,17 +604,40 @@ async def setTimelyDM(interaction: discord.Interaction, day: str, hour: str, min
 # STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
 @bot.tree.command(name='set_dm')
 @app_commands.autocomplete(role_name=role_name_autocomplete)
-async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message: str, file_path: str,
-                       role_name: str):
+async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message: str, file_path: str, role_name: str):
     pacific = pytz.timezone('America/Los_Angeles')
     send_time = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
     send_time = pacific.localize(send_time)
 
+    # for debugging timezone and sending time
+    # now = datetime.now(pacific)
+    # print("NOW (Pacific):", now.isoformat())
+    # print("SEND TIME:", send_time.isoformat())
+    # print("DELTA (seconds):", (send_time - now).total_seconds())
+
+    if send_time <= datetime.now(pacific):
+        await interaction.response.send_message(f'scheduled message sending time MUST be in the future',
+                                                ephemeral=True, delete_after=60)
+        print(f'scheduled message sending time MUST be in the future')
+        return 0
+
+    # apparently I can't pass a live Guild instance into a delayed/scheduled job
+    # scheduler.add_job(print_dm, DateTrigger(run_date=send_time),
+    #                   args=[message, file_path, interaction.guild, role_name])
+
     scheduler.add_job(print_dm, DateTrigger(run_date=send_time),
-                      args=[message, file_path, interaction.guild, role_name])
+                      args=[message, file_path, interaction.guild.id, role_name])
+
+    # add a testing job - for debugging purposes
+    scheduler.add_job(
+        lambda: print("TEST JOB FIRED"),
+        'date', run_date=datetime.now() + timedelta(seconds=5)
+    )
+
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
                                             f'with file: {file_path}. Message is only visible to you and will '
                                             f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+    print(scheduler.get_jobs())
 # testing command: /set_dm date_time:2024-08-18 22:14 message:random dm - please work file_path:none role_name:random_testing_role
 
 
