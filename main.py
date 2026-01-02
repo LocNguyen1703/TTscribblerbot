@@ -1,6 +1,6 @@
 # python discord bot tutorial for reference:
 # https://www.youtube.com/watch?v=UYJDKSah-Ww
-
+import io
 import os
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -8,6 +8,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 import asyncio
+import aiohttp  # for handling attachments in scheduled messages
+import tempfile  # for handling attachments in scheduled messages
 import functools
 
 import discord
@@ -454,7 +456,7 @@ async def badStandingCheck(interaction: discord.Interaction):
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
 # helper function to print message
 async def print_message(message: str, file_path: str, channel_name: str, guild_id: int):
-    print("print_dm triggered")  # for debugging
+    print("print_message triggered")  # for debugging
 
     guild = bot.get_guild(guild_id)
     if guild is None:
@@ -474,7 +476,7 @@ async def print_message(message: str, file_path: str, channel_name: str, guild_i
 
 
 # helper function to dm message
-async def print_dm(message: str, file_path: str, guild_id: int, role_name: str):
+async def print_dm(message: str, filebytes: bytes | None, filename: str | None, guild_id: int, role_name: str):
     print("print_dm triggered")  # for debugging
 
     guild = bot.get_guild(guild_id)
@@ -487,6 +489,40 @@ async def print_dm(message: str, file_path: str, guild_id: int, role_name: str):
         print(f'Role {role_name} NOT found')
         return
 
+    '''(2026-01-02) issue: schedule-sending message with file attachments DON'T WORK - even though it works fine from local testing
+    why: cause the bot is HOSTED FROM VIRTUAL MACHINE - so when bot tries to find the file FROM WITH THE VM with 
+    the directory included - which is FROM LOCAL LAPTOP - that directory doesn't work 
+    
+    FIX BELOW: 
+    - essentially when including a file directory from laptop to the command interface 
+        - before the command runs - discord (the app itself) UPLOADS the file to Discord servers
+        - the file now lives IN the Discord servers - and therefore has a file URL 
+        - Discord server SENDS URL back to the bot - what the bot has is the URL 
+    - I'd also have to READ/DOWNLOAD and PRESERVE FILE FORMAT before sending out file instead of sending out RAW BYTES
+     or RAW DATA (or, what's known as METADATA) of the attachment
+    '''
+
+    # discord_file = None
+    #
+    # if filebytes and filename:
+    #     discord_file = discord.File(
+    #         fp=io.BytesIO(filebytes),
+    #         filename=filename
+    #     )
+    '''
+    this code above is creating a FILE-POINTER object: 
+    - BytesIO() function creates a FILESTREAM (think of it like a stream of bytes)
+    - when the bot uses this file-pointer to send out the file: 
+        - the bot "consumes" the file pointer - i.e. it reads the bytestream using the file pointer
+        - i.e. the bot literally sends the file BYTE BY BYTE 
+        - i.e. each byte the bot reads and sends out - the BYTE POINTER MOVES FORWARD
+        - i.e. once bot is done sending the bytestream - the POINTER IS AT THE END OF BYTESTREAM (i.e. pointer is 
+        pointing at NULL)
+    - if we only create one fp object and reuse it to send to multiple users - the bot eventually will send 
+    a file attachment with NO CONTENT (since we're telling it to send a random file with the filename with 0 BYTES!!)
+    - that's why we have to include this code above inside the main loop to send out message to multiple users
+    '''
+
     edited = "\n".join(message.split("[br]"))
     # filter and put all members with same role object into a list
     # members_with_roles = [member for member in guild.members if role in member.roles and not member.bot]
@@ -496,9 +532,18 @@ async def print_dm(message: str, file_path: str, guild_id: int, role_name: str):
     for member in members_with_roles:
         print(member.roles)  # for debugging
         try:
-            if file_path.lower() != "none":
-                file = discord.File(file_path.strip('"'))  # remove quotation marks - file paths don't have ""
-                await member.send(edited, file=file)
+            discord_file = None
+
+            if filebytes and filename:
+                discord_file = discord.File(
+                    fp=io.BytesIO(filebytes),
+                    filename=filename
+                )
+            # if file_path.lower() != "none":
+            #     file = discord.File(file_path.strip('"'))  # remove quotation marks - file paths don't have ""
+            #     await member.send(edited, file=file)
+            if discord_file:
+                await member.send(edited, file=discord_file)
             else:
                 await member.send(edited)
             print("function ran successfully")  # for debugging
@@ -615,7 +660,7 @@ async def setTimelyDM(interaction: discord.Interaction, day: str, day_of_week: s
 # STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
 @bot.tree.command(name='set_dm')
 @app_commands.autocomplete(role_name=role_name_autocomplete)
-async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message: str, file_path: str, role_name: str):
+async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message: str, file: discord.Attachment | None, role_name: str):
     pacific = pytz.timezone('America/Los_Angeles')
     send_time = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
     send_time = pacific.localize(send_time)
@@ -636,8 +681,16 @@ async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message
     # scheduler.add_job(print_dm, DateTrigger(run_date=send_time),
     #                   args=[message, file_path, interaction.guild, role_name])
 
+    '''
+    - save file url after Discord app uploaded it to Discord server and Discord server sends url back to the bot
+    '''
+    filebytes, filename = None, None
+    if file:
+        filebytes = await file.read()
+        filename = file.filename
+
     scheduler.add_job(print_dm, DateTrigger(run_date=send_time),
-                      args=[message, file_path, interaction.guild.id, role_name])
+                      args=[message, filebytes, filename, interaction.guild.id, role_name])
 
     # add a testing job - for debugging purposes
     # scheduler.add_job(
@@ -646,9 +699,8 @@ async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message
     # )
 
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
-                                            f'with file: {file_path}. Message is only visible to you and will '
+                                            f'with file: {file.url}. Message is only visible to you and will '
                                             f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
-    print(scheduler.get_jobs())
 # testing command: /set_dm date_time:2024-08-18 22:14 message:random dm - please work file_path:none role_name:random_testing_role
 
 
