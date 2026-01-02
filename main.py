@@ -453,7 +453,16 @@ async def badStandingCheck(interaction: discord.Interaction):
 
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
 # helper function to print message
-async def print_message(message: str, file_path: str, input_channel: discord.TextChannel):
+async def print_message(message: str, file_path: str, channel_name: str, guild_id: int):
+    print("print_dm triggered")  # for debugging
+
+    guild = bot.get_guild(guild_id)
+    if guild is None:
+        print(f' Guild {guild_id} not found (bot may not be ready)')
+        return 0
+
+    input_channel = discord.utils.get(guild.text_channels, name=channel_name)
+
     edited = "\n".join(message.split("[br]"))  # "[br]" my own syntax for line breaks ("\n\n") - change if needed
 
     if input_channel:
@@ -530,16 +539,17 @@ async def role_name_autocomplete(interaction: discord.Interaction, current: str)
 # actual scheduler function
 @bot.tree.command(name='set_timely_message')
 @app_commands.autocomplete(channel_name=channel_name_autocomplete)
-async def setTimelyMessage(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str,
-                           message: str, file_path: str, channel_name: str):
-    channel = discord.utils.get(interaction.guild.text_channels, name=channel_name)
+async def setTimelyMessage(interaction: discord.Interaction, day: str, day_of_week: str, hour: str, minute: str,
+                           second: str, message: str, file_path: str, channel_name: str):
+    # channel = discord.utils.get(interaction.guild.text_channels, name=channel_name)
 
     scheduler.add_job(print_message, CronTrigger(day=None if day.lower() == "none" else day,
+                                                 day_of_week=None if day_of_week.lower() == "none" else day_of_week,
                                                  hour=None if hour.lower() == "none" else hour,
                                                  minute=None if minute.lower() == "none" else minute,
                                                  second=None if second.lower() == "none" else second,
                                                  timezone=pytz.timezone('America/Los_Angeles')),
-                      args=[message, file_path, channel])
+                      args=[message, file_path, channel_name, interaction.guild.id])
     await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
                                             f'Message is only visible to you and will terminate in T-minus 60 seconds',
                                             ephemeral=True, delete_after=60)
@@ -574,9 +584,10 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
     # send_time = send_time.astimezone(pytz.UTC)  # Convert to UTC time
 
     # get channel from channel_name
-    channel = discord.utils.get(interaction.guild.text_channels, name=channel_name)
+    # channel = discord.utils.get(interaction.guild.text_channels, name=channel_name)
 
-    scheduler.add_job(print_message, DateTrigger(run_date=send_time), args=[message, file_path, channel])
+    scheduler.add_job(print_message, DateTrigger(run_date=send_time),
+                      args=[message, file_path, channel_name, interaction.guild.id])
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
                                             f'with file: {file_path}. Message is only visible to you and will '
                                             f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
@@ -594,7 +605,7 @@ async def setTimelyDM(interaction: discord.Interaction, day: str, day_of_week: s
                                             minute=None if minute.lower() == "none" else minute,
                                             second=None if second.lower() == "none" else second,
                                             timezone=pytz.timezone('America/Los_Angeles')),
-                      args=[message, file_path, interaction.guild, role_name])
+                      args=[message, file_path, interaction.guild.id, role_name])
 
     await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
                                             f'Message is only visible to you and will terminate in T-minus 60 seconds',
@@ -629,10 +640,10 @@ async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message
                       args=[message, file_path, interaction.guild.id, role_name])
 
     # add a testing job - for debugging purposes
-    scheduler.add_job(
-        lambda: print("TEST JOB FIRED"),
-        'date', run_date=datetime.now() + timedelta(seconds=5)
-    )
+    # scheduler.add_job(
+    #     lambda: print("TEST JOB FIRED"),
+    #     'date', run_date=datetime.now() + timedelta(seconds=5)
+    # )
 
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
                                             f'with file: {file_path}. Message is only visible to you and will '
@@ -642,7 +653,14 @@ async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message
 
 
 # helper function to send dm's about member's bad-standing status
-async def print_bad_status(guild: discord.Guild):
+async def print_bad_status(guild_id: int):
+    print("print_bad_status triggered")  # for debugging
+
+    guild = bot.get_guild(guild_id)
+    if guild is None:
+        print(f' Guild {guild_id} not found (bot may not be ready)')
+        return 0
+
     # fetch values from event attendance - check to see if there are any "x"
     X_RANGE = os.getenv('X_CHECK_RANGE')
     x_fetch = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=X_RANGE).execute()
@@ -675,7 +693,7 @@ async def print_bad_status(guild: discord.Guild):
         row = names.index([username])
 
         # if not x_check[row+1]: reason = "None added"
-        if row < len(x_check):  # to avoid out-of-index error
+        if row < len(x_check)-1:  # to avoid out-of-index error
             for i in range(len(x_check[row+1])):
                 if x_check[row+1][i] == "x":  # row+1 takes into account mismatch caused by 1st row of event_titles
                     reason += "-missed " + event_titles[i] + " (+1)\n"
@@ -719,14 +737,16 @@ async def print_bad_status(guild: discord.Guild):
 
 # STEP 4*: EXTRA-SPECIFIC BOT COMMAND TO SCHEDULE BAD-STANDING STATUS MESSAGES
 @bot.tree.command(name='timely_bad_standing_dm')
-async def timelyBadStandingDM(interaction: discord.Interaction, day: str, hour: str, minute: str, second: str):
+async def timelyBadStandingDM(interaction: discord.Interaction, day: str, day_of_week: str, hour: str, minute: str,
+                              second: str):
 
     scheduler.add_job(print_bad_status, CronTrigger(day=None if day.lower() == "none" else day,
+                                                    day_of_week=None if day_of_week.lower() == "none" else day_of_week,
                                                     hour=None if hour.lower() == "none" else hour,
                                                     minute=None if minute.lower() == "none" else minute,
                                                     second=None if second.lower() == "none" else second,
                                                     timezone=pytz.timezone('America/Los_Angeles')),
-                      args=[interaction.guild])
+                      args=[interaction.guild.id])
 
     await interaction.response.send_message(f'message scheduled. Message is only visible to you and will '
                                             f'terminate in T-minus 90 seconds', ephemeral=True, delete_after=90)
