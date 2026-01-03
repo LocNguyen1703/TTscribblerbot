@@ -455,7 +455,7 @@ async def badStandingCheck(interaction: discord.Interaction):
 
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE TIMELY MESSAGES
 # helper function to print message
-async def print_message(message: str, file_path: str, channel_name: str, guild_id: int):
+async def print_message(message: str, filebytes: bytes | None, filename: str | None, channel_name: str, guild_id: int):
     print("print_message triggered")  # for debugging
 
     guild = bot.get_guild(guild_id)
@@ -468,11 +468,19 @@ async def print_message(message: str, file_path: str, channel_name: str, guild_i
     edited = "\n".join(message.split("[br]"))  # "[br]" my own syntax for line breaks ("\n\n") - change if needed
 
     if input_channel:
-        if file_path.lower() != "none":
-            file = discord.File(file_path.strip('"'))  # remove quotation marks - file paths don't have ""
-            await input_channel.send(edited, file=file)
-        else:
-            await input_channel.send(edited)
+        # if file_path.lower() != "none":
+        #     file = discord.File(file_path.strip('"'))  # remove quotation marks - file paths don't have ""
+        #     await input_channel.send(edited, file=file)
+        # else:
+        #     await input_channel.send(edited)
+        discord_file = None
+
+        if filebytes and filename:
+            discord_file = discord.File(
+                fp=io.BytesIO(filebytes),
+                filename=filename
+            )
+        await input_channel.send(edited, file=discord_file)
 
 
 # helper function to dm message
@@ -585,8 +593,12 @@ async def role_name_autocomplete(interaction: discord.Interaction, current: str)
 @bot.tree.command(name='set_timely_message')
 @app_commands.autocomplete(channel_name=channel_name_autocomplete)
 async def setTimelyMessage(interaction: discord.Interaction, day: str, day_of_week: str, hour: str, minute: str,
-                           second: str, message: str, file_path: str, channel_name: str):
+                           second: str, message: str, file: discord.Attachment | None, channel_name: str):
     # channel = discord.utils.get(interaction.guild.text_channels, name=channel_name)
+    filebytes, filename = None, None
+    if file:
+        filebytes = await file.read()
+        filename = file.filename
 
     scheduler.add_job(print_message, CronTrigger(day=None if day.lower() == "none" else day,
                                                  day_of_week=None if day_of_week.lower() == "none" else day_of_week,
@@ -594,8 +606,8 @@ async def setTimelyMessage(interaction: discord.Interaction, day: str, day_of_we
                                                  minute=None if minute.lower() == "none" else minute,
                                                  second=None if second.lower() == "none" else second,
                                                  timezone=pytz.timezone('America/Los_Angeles')),
-                      args=[message, file_path, channel_name, interaction.guild.id])
-    await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
+                      args=[message, filebytes, filename, channel_name, interaction.guild.id])
+    await interaction.response.send_message(f'message scheduled: "{message}" with file: {file.url if file else None}. '
                                             f'Message is only visible to you and will terminate in T-minus 60 seconds',
                                             ephemeral=True, delete_after=60)
     # return NotImplementedError("no code yet...")
@@ -604,8 +616,8 @@ async def setTimelyMessage(interaction: discord.Interaction, day: str, day_of_we
 # STEP 4*: SPECIFIC BOT COMMAND TO SCHEDULE A ONE-TIME MESSAGE
 @bot.tree.command(name='set_message')
 @app_commands.autocomplete(channel_name=channel_name_autocomplete)
-async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, message: str, file_path: str,
-                            channel_name: str):
+async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, message: str,
+                            file: discord.Attachment | None, channel_name: str):
     """
     ideas:
         maybe I can use the same method as the set_timely_message command above, just after the message is sent,
@@ -628,21 +640,36 @@ async def setOneTimeMessage(interaction: discord.Interaction, date_time: str, me
     send_time = pacific.localize(send_time)
     # send_time = send_time.astimezone(pytz.UTC)  # Convert to UTC time
 
+    if send_time <= datetime.now(pacific):
+        await interaction.response.send_message(f'scheduled message sending time MUST be in the future',
+                                                ephemeral=True, delete_after=60)
+        print(f'scheduled message sending time MUST be in the future')
+        return 0
+
     # get channel from channel_name
     # channel = discord.utils.get(interaction.guild.text_channels, name=channel_name)
+    filebytes, filename = None, None
+    if file:
+        filebytes = await file.read()
+        filename = file.filename
 
     scheduler.add_job(print_message, DateTrigger(run_date=send_time),
-                      args=[message, file_path, channel_name, interaction.guild.id])
+                      args=[message, filebytes, filename, channel_name, interaction.guild.id])
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
-                                            f'with file: {file_path}. Message is only visible to you and will '
-                                            f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+                                            f'with file: {file.url if file else None}. Message is only visible to you '
+                                            f'and will terminate in T-minus 60 seconds',
+                                            ephemeral=True, delete_after=60)
 
 
 # STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
 @bot.tree.command(name='set_timely_dm')
 @app_commands.autocomplete(role_name=role_name_autocomplete)
 async def setTimelyDM(interaction: discord.Interaction, day: str, day_of_week: str, hour: str, minute: str, second: str,
-                      message: str, file_path: str, role_name: str):
+                      message: str, file: discord.Attachment | None, role_name: str):
+    filebytes, filename = None, None
+    if file:
+        filebytes = await file.read()
+        filename = file.filename
 
     scheduler.add_job(print_dm, CronTrigger(day=None if day.lower() == "none" else day,
                                             day_of_week=None if day_of_week.lower() == "none" else day_of_week,
@@ -650,9 +677,9 @@ async def setTimelyDM(interaction: discord.Interaction, day: str, day_of_week: s
                                             minute=None if minute.lower() == "none" else minute,
                                             second=None if second.lower() == "none" else second,
                                             timezone=pytz.timezone('America/Los_Angeles')),
-                      args=[message, file_path, interaction.guild.id, role_name])
+                      args=[message, filebytes, filename, interaction.guild.id, role_name])
 
-    await interaction.response.send_message(f'message scheduled: "{message}" with file: {file_path}. '
+    await interaction.response.send_message(f'message scheduled: "{message}" with file: {file.url if file else None}. '
                                             f'Message is only visible to you and will terminate in T-minus 60 seconds',
                                             ephemeral=True, delete_after=60)
 
@@ -660,7 +687,8 @@ async def setTimelyDM(interaction: discord.Interaction, day: str, day_of_week: s
 # STEP 4*: SPECIFIC BOT COMMAND TO DM MESSAGES TO USERS WITH FILTERED ROLE
 @bot.tree.command(name='set_dm')
 @app_commands.autocomplete(role_name=role_name_autocomplete)
-async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message: str, file: discord.Attachment | None, role_name: str):
+async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message: str, file: discord.Attachment | None,
+                       role_name: str):
     pacific = pytz.timezone('America/Los_Angeles')
     send_time = datetime.strptime(date_time, '%Y-%m-%d %H:%M')
     send_time = pacific.localize(send_time)
@@ -699,8 +727,9 @@ async def setOneTimeDM(interaction: discord.Interaction, date_time: str, message
     # )
 
     await interaction.response.send_message(f'one-time message scheduled at {send_time}: "{message}", '
-                                            f'with file: {file.url}. Message is only visible to you and will '
-                                            f'terminate in T-minus 60 seconds', ephemeral=True, delete_after=60)
+                                            f'with file: {file.url if file else None}. Message is only visible to you '
+                                            f'and will terminate in T-minus 60 seconds',
+                                            ephemeral=True, delete_after=60)
 # testing command: /set_dm date_time:2024-08-18 22:14 message:random dm - please work file_path:none role_name:random_testing_role
 
 
