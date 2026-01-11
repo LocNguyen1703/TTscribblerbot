@@ -315,6 +315,9 @@ async def noteCommand(interaction: discord.Interaction):
             reason += f'-Other rewards: {other_hours[k][5]} (-{float(other_hours[k][5])})\n'
         if other_hours[k][6] != "" and float(other_hours[k][6]) > 0:  # OTHER penalty hours not accounted for
             reason += f'-Other penalties: {other_hours[k][6]} (+{float(other_hours[k][6])})\n'
+        if other_hours[k][7] != "" and float(other_hours[k][7]) > 0:  # CARRYOVER POINTS
+            reason += f'-Carry-Over from Fall to Spring: {other_hours[k][7]} (+{float(other_hours[k][7])})\n'
+            #  -Carry-Over from Fall to Spring: 1.5 (+1.5)
 
         # Create the request body to add the note to the specified cell
         requests.append({
