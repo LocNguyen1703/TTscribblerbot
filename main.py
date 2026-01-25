@@ -38,7 +38,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
 
 # UNCOMMENT THIS LINE WHEN RUNNING ON LOCAL MACHINE
-# SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"
+SERVICE_ACCOUNT_FILE = "C:\ThetaTau\TTscribblerbot\serviceaccount_auto_auth.json"
 
 # load ID of my Google spreadsheet of choice and ranges of cells I want to access/edit from .env
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
@@ -67,12 +67,12 @@ web browsers manually
 """
 
 # UNCOMMENT THESE LINES WHEN RUNNING ON VM!
-creds = credentials = service_account.Credentials.from_service_account_file(
-    os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
+# creds = credentials = service_account.Credentials.from_service_account_file(
+#     os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=SCOPES)
 
 # UNCOMMENT THESE LINES WHEN RUNNING ON LOCAL MACHINE! (e.g. for testing purposes)
-# creds = service_account.Credentials.from_service_account_file(
-#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 # instance for Google Calendar - called "service_calendars"
 # this service instance is from a class with multiple subclasses (my way of describing it)
@@ -301,6 +301,11 @@ async def noteCommand(interaction: discord.Interaction):
         # checking for OTHER hours, tabling, tabling MISSED, study, committee volunteering, tutoring hours
         # "OTHER" hours include any new rules imposed by Scribe or chairs for bad standing points rewards
 
+        # since it's assumed carry-over column is always filled - other_hours[k] should NEVER be empty
+        # if other_hours[k] for some reason is empty - we can assume it reached the end of the list of Brothers
+        # so we can skip this loop and end the note-appending process
+        if not other_hours[k]:
+            break
         if other_hours[k][4] != "" and float(other_hours[k][4]) > 0:  # tabling hours
             reason += f'-Extra tabling hours: {other_hours[k][4]} (-{float(other_hours[k][4])*tabling_rule})\n'
         if other_hours[k][3] != "" and float(other_hours[k][3]) > 0:  # tabling hours MISSED
