@@ -423,7 +423,7 @@ async def badStandingCheck(interaction: discord.Interaction):
     if row < len(other_hours):  # to avoid out_of_index error
         # checking for tabling, study, committee volunteering, tutoring hours
         if other_hours[row][4] != "" and float(other_hours[row][4]) > 0:  # tabling hours
-            reason += f'-Extra tabling hours: {other_hours[row][4]} (-{float(other_hours[row][4]*tabling_rule)})\n'
+            reason += f'-Extra tabling hours: {other_hours[row][4]} (-{float(other_hours[row][4])*tabling_rule})\n'
         if other_hours[row][3] != "" and float(other_hours[row][3]) > 0:  # tabling hours MISSED
             reason += f'-missed tabling hours: {other_hours[row][3]} (+{float(other_hours[row][3])*tabling_missed_rule})\n'
         if other_hours[row][2] != "" and float(other_hours[row][2]) > 0:  # study hours
